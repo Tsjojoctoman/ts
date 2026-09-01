@@ -1,5 +1,6 @@
 /* Sections Next to Sections Code (50/50 split) */
-body:not(.sqs-edit-mode-active) section.region {
+body:not(.sqs-edit-mode-active) section.region,
+body:not(.sqs-edit-mode-active) #siteWrapper .sections {
   display: flex;
   flex-wrap: wrap;
 }
