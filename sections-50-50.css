@@ -1,0 +1,28 @@
+/* Sections Next to Sections Code (50/50 split) */
+body:not(.sqs-edit-mode-active) section.region {
+  display: flex;
+  flex-wrap: wrap;
+}
+body:not(.sqs-edit-mode-active) .page-section {
+  width: 100%;
+}
+
+/* This pair: divide these two sections 50% / 50%.
+   They must be adjacent sections on the same page for the flex row to work. */
+body:not(.sqs-edit-mode-active) section[data-section-id="6a7eea0a251a6e4a06cf2b72"],
+body:not(.sqs-edit-mode-active) section[data-section-id="6a96f7a47bb2ce10ebfe53c1"] {
+  width: 50% !important;
+}
+
+/* Remove the extra top padding Squarespace adds to the first section in the row */
+body:not(.sqs-edit-mode-active) section[data-section-id="6a7eea0a251a6e4a06cf2b72"] {
+  padding-top: 0 !important;
+}
+
+/* Stack back to full-width on mobile/tablet */
+@media screen and (max-width: 800px) {
+  body:not(.sqs-edit-mode-active) #siteWrapper .sections section.page-section {
+    width: 100% !important;
+  }
+}
+/* end Sections Next to Sections Code */
