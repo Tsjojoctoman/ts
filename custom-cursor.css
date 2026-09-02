@@ -3,3 +3,15 @@ body:not(.sqs-edit-mode-active),
 body:not(.sqs-edit-mode-active) * {
   cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAKElEQVR4nGN8xi/5n4GGgImWho9aMGrBqAWjFoxaMGrBqAWjFlAPAACFYgI9Doqb5AAAAABJRU5ErkJggg==') 12 12, auto !important;
 }
+
+/* Over red backgrounds (the fullscreen nav menu, and any "dark theme"
+   section, which use the same red as the cursor) swap to a white square
+   instead so the cursor stays visible. This selector is written with the
+   same "body:not(...) X" pattern as the rule above so it's specific
+   enough to win the CSS cascade over it. */
+body:not(.sqs-edit-mode-active) .header-menu,
+body:not(.sqs-edit-mode-active) .header-menu *,
+body:not(.sqs-edit-mode-active) [data-section-theme="dark"],
+body:not(.sqs-edit-mode-active) [data-section-theme="dark"] * {
+  cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAJ0lEQVR4nO3NMQEAAAjDMMC/52ECvlRA00lSj83nHAAAAAAAAOCuBRctBCzRpB8qAAAAAElFTkSuQmCC') 12 12, auto !important;
+}
