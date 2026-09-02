@@ -1,0 +1,5 @@
+/* Custom red square cursor (#E60F19) site-wide */
+body:not(.sqs-edit-mode-active),
+body:not(.sqs-edit-mode-active) * {
+  cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAKElEQVR4nGN8xi/5n4GGgImWho9aMGrBqAWjFoxaMGrBqAWjFlAPAACFYgI9Doqb5AAAAABJRU5ErkJggg==') 12 12, auto !important;
+}
