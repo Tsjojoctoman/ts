@@ -24,6 +24,14 @@ body:not(.sqs-edit-mode-active) section[id*="split-50"] {
   padding-bottom: 0 !important;
 }
 
+/* Make the red section a perfect square: its height always matches its
+   width. align-self: flex-start stops it being stretched to match the
+   other column's (taller) height. */
+body:not(.sqs-edit-mode-active) section[id*="split-50-a"] {
+  aspect-ratio: 1 / 1;
+  align-self: flex-start;
+}
+
 /* Stack back to full-width on mobile/tablet */
 @media screen and (max-width: 800px) {
   body:not(.sqs-edit-mode-active) #siteWrapper .sections section.page-section {
