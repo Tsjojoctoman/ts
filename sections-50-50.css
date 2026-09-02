@@ -36,3 +36,9 @@ body:not(.sqs-edit-mode-active) section[id*="split-50"] {
   }
 }
 /* end Sections Next to Sections Code */
+
+/* Remove top padding above the "Published Books by Hans Hess" gallery
+   slideshow section (the gap under the header) */
+section[data-section-id="6a92cde6bbed3c398a6038e1"] {
+  padding-top: 0 !important;
+}
