@@ -17,9 +17,11 @@ body:not(.sqs-edit-mode-active) section[id*="split-50"] {
   flex: 0 0 50% !important;
 }
 
-/* Remove the extra top padding Squarespace adds to the first section in a row */
-body:not(.sqs-edit-mode-active) section[id*="split-50"]:first-child {
+/* Remove the built-in top/bottom padding Squarespace adds to each section
+   (Section Spacing) so the two columns don't have big gaps above/below them */
+body:not(.sqs-edit-mode-active) section[id*="split-50"] {
   padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 /* Stack back to full-width on mobile/tablet */
