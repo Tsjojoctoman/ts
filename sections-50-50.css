@@ -26,6 +26,26 @@ body:not(.sqs-edit-mode-active) section[data-section-id="6a7eea0a251a6e4a06cf2b7
   padding-top: 0 !important;
 }
 
+/* These two sections are set to Squarespace's "Full Bleed" section width,
+   which forces .content-wrapper to stretch to 100vw and breaks the 50/50
+   split. Force the wrapper back to a normal, contained width so it
+   actually respects the section's 50% box instead of overriding it.
+   (The cleaner fix is switching Section Width to "Inset" in the
+   Squarespace editor for both sections — this CSS is a workaround for
+   staying in code instead.) */
+body:not(.sqs-edit-mode-active) section[data-section-id="6a7eea0a251a6e4a06cf2b72"] .content-wrapper,
+body:not(.sqs-edit-mode-active) section[data-section-id="6a96f7a47bb2ce10ebfe53c1"] .content-wrapper {
+  --sqs-site-max-width: var(--maxPageWidth) !important;
+  --sqs-site-gutter: var(--pagePadding) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  left: auto !important;
+  right: auto !important;
+  transform: none !important;
+}
+
 /* Stack back to full-width on mobile/tablet */
 @media screen and (max-width: 800px) {
   body:not(.sqs-edit-mode-active) #siteWrapper .sections section.page-section {
