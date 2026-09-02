@@ -1,10 +1,15 @@
 /* Sections Next to Sections Code (50/50 split) */
-body:not(.sqs-edit-mode-active) section.region,
-body:not(.sqs-edit-mode-active) #siteWrapper .sections {
+/* :has() scopes this to ONLY pages that actually contain a split-50
+   section — without it, this rule turned every section container on
+   EVERY page of the site into a flex layout, which stops sibling
+   margins from collapsing the way they normally do in block layout and
+   was creating an unwanted gap under the header on unrelated pages. */
+body:not(.sqs-edit-mode-active) section.region:has(section[id*="split-50"]),
+body:not(.sqs-edit-mode-active) #siteWrapper .sections:has(section[id*="split-50"]) {
   display: flex;
   flex-wrap: wrap;
 }
-body:not(.sqs-edit-mode-active) .page-section {
+body:not(.sqs-edit-mode-active) .sections:has(section[id*="split-50"]) .page-section {
   width: 100%;
 }
 
@@ -34,7 +39,7 @@ body:not(.sqs-edit-mode-active) section[id*="split-50-a"] {
 
 /* Stack back to full-width on mobile/tablet */
 @media screen and (max-width: 800px) {
-  body:not(.sqs-edit-mode-active) #siteWrapper .sections section.page-section {
+  body:not(.sqs-edit-mode-active) #siteWrapper .sections:has(section[id*="split-50"]) section.page-section {
     width: 100% !important;
   }
 }
