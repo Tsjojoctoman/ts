@@ -8,42 +8,18 @@ body:not(.sqs-edit-mode-active) .page-section {
   width: 100%;
 }
 
-/* This pair: divide these two sections 50% / 50%.
-   They must be adjacent sections on the same page for the flex row to work.
-   box-sizing: border-box makes each section's own padding count INSIDE
-   its 50% width instead of adding on top of it — without this, the two
-   sections' padding can push their combined width past 100% and the
-   second one wraps onto its own line (looks like stacking). */
-body:not(.sqs-edit-mode-active) section[data-section-id="6a7eea0a251a6e4a06cf2b72"],
-body:not(.sqs-edit-mode-active) section[data-section-id="6a96f7a47bb2ce10ebfe53c1"] {
+/* Any section whose Section ID contains "split-50" becomes half-width.
+   Set Section ID to something like split-50-a / split-50-b in the
+   Squarespace editor (Section Settings) for each of the two sections. */
+body:not(.sqs-edit-mode-active) section[id*="split-50"] {
   width: 50% !important;
   box-sizing: border-box !important;
   flex: 0 0 50% !important;
 }
 
-/* Remove the extra top padding Squarespace adds to the first section in the row */
-body:not(.sqs-edit-mode-active) section[data-section-id="6a7eea0a251a6e4a06cf2b72"] {
+/* Remove the extra top padding Squarespace adds to the first section in a row */
+body:not(.sqs-edit-mode-active) section[id*="split-50"]:first-child {
   padding-top: 0 !important;
-}
-
-/* These two sections are set to Squarespace's "Full Bleed" section width,
-   which forces .content-wrapper to stretch to 100vw and breaks the 50/50
-   split. Force the wrapper back to a normal, contained width so it
-   actually respects the section's 50% box instead of overriding it.
-   (The cleaner fix is switching Section Width to "Inset" in the
-   Squarespace editor for both sections — this CSS is a workaround for
-   staying in code instead.) */
-body:not(.sqs-edit-mode-active) section[data-section-id="6a7eea0a251a6e4a06cf2b72"] .content-wrapper,
-body:not(.sqs-edit-mode-active) section[data-section-id="6a96f7a47bb2ce10ebfe53c1"] .content-wrapper {
-  --sqs-site-max-width: var(--maxPageWidth) !important;
-  --sqs-site-gutter: var(--pagePadding) !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  left: auto !important;
-  right: auto !important;
-  transform: none !important;
 }
 
 /* Stack back to full-width on mobile/tablet */
