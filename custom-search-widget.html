@@ -30,21 +30,15 @@
         ourSvg.setAttribute('height', svgRect.height);
       }
     }
-    if (existingLink) {
-      var cs = getComputedStyle(existingLink);
-      ourLink.style.display = 'inline-flex';
-      ourLink.style.alignItems = 'center';
-      ourLink.style.padding = cs.padding;
-      ourLink.style.margin = cs.margin;
-    } else {
-      // Fallback if nothing else is in the container yet
-      ourLink.style.display = 'inline-flex';
-      ourLink.style.alignItems = 'center';
-      ourLink.style.padding = '6px';
-    }
-    // Extra breathing room before the cart icon — adjust this value if
-    // you want more/less gap.
-    ourLink.style.marginRight = '15px';
+    // Size is matched to the cart icon above, but spacing is NOT copied
+    // from the cart's own padding — its padding is close to zero (the
+    // gap between icons comes from elsewhere, e.g. a flex `gap` on the
+    // container), so copying it left almost no breathing room. Instead
+    // give our icon clean, explicit spacing on both sides. Adjust this
+    // one number for more/less gap on both sides at once.
+    ourLink.style.display = 'inline-flex';
+    ourLink.style.alignItems = 'center';
+    ourLink.style.margin = '0 15px 0 0';
 
     actions.insertBefore(clone, actions.firstChild);
   });
