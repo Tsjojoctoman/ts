@@ -95,7 +95,6 @@
   var input = document.getElementById('ts-search-input');
   var form = document.getElementById('ts-search-form');
   var resultsEl = document.getElementById('ts-search-results');
-  var debounceTimer = null;
   var currentQuery = '';
 
   var actions = document.querySelector('.header-actions');
@@ -118,18 +117,13 @@
     }
   });
 
-  // Stop the form from ever doing a real page navigation.
+  // Stop the form from ever doing a real page navigation. Search only
+  // fires on submit (Enter / "Go") now, not on every keystroke — typing
+  // live was firing a request per character and tripping Squarespace's
+  // rate limit (429), which is why results were failing to load.
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     runSearch(input.value);
-  });
-
-  input.addEventListener('input', function () {
-    clearTimeout(debounceTimer);
-    var value = input.value;
-    debounceTimer = setTimeout(function () {
-      runSearch(value);
-    }, 300);
   });
 
   function runSearch(query) {
@@ -142,7 +136,12 @@
     resultsEl.innerHTML = '<div class="ts-empty">Searching…</div>';
 
     fetch('/search?format=json&query=' + encodeURIComponent(query))
-      .then(function (res) { return res.json(); })
+      .then(function (res) {
+        if (res.status === 429) {
+          throw new Error('rate-limited');
+        }
+        return res.json();
+      })
       .then(function (data) {
         // Only render if this response matches the latest thing typed
         // (avoids an older, slower response overwriting a newer one).
@@ -152,7 +151,10 @@
       .catch(function (err) {
         if (query !== currentQuery) return;
         console.error('Search request failed:', err);
-        resultsEl.innerHTML = '<div class="ts-error">Search results could not be loaded. Press Enter to try the full search page instead.</div>';
+        var message = err && err.message === 'rate-limited'
+          ? 'Too many searches too quickly — wait a few seconds and try again.'
+          : 'Search results could not be loaded. Press Enter to try the full search page instead.';
+        resultsEl.innerHTML = '<div class="ts-error">' + message + '</div>';
       });
   }
 
