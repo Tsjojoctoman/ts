@@ -2,17 +2,18 @@
 // Make "ABOUT US" expand its dropdown in place instead of navigating to
 // its own page (/about-1).
 //
-// IMPORTANT: paste this into Settings > Advanced > Code Injection >
-// HEADER this time (not Footer). Header code runs before Squarespace's
-// own site script has a chance to attach its navigation click handler,
-// so registering our delegated listener here first — and calling
-// stopImmediatePropagation() — should fully block their handler from
-// ever running on this click, regardless of how their router works
-// internally.
+// Paste this into Settings > Advanced > Code Injection > HEADER (not
+// Footer). Header code runs before Squarespace's own site script, so
+// registering the listener here first — and calling
+// stopImmediatePropagation() — blocks their navigation handler from
+// running on this click.
 //
-// Using delegation (listening on document, checking e.target.closest)
-// instead of grabbing a specific link reference also means this keeps
-// working even if Squarespace re-renders the mobile menu's markup later.
+// Rather than guessing at whatever native "+" toggle button exists,
+// this directly shows/hides the sub-items container itself
+// (.header-menu-nav-folder-content, confirmed from your Inspect
+// screenshot earlier) by toggling its display style. No animation, but
+// guaranteed to work regardless of what Squarespace's own toggle does
+// internally.
 (function () {
   document.addEventListener('click', function (e) {
     var link = e.target.closest('a[href*="/about-1"]');
@@ -22,20 +23,23 @@
     e.stopPropagation();
     e.stopImmediatePropagation();
 
-    var folder =
+    var wrapper =
+      link.closest('.header-menu-nav-folder-wrapper') ||
       link.closest('.header-menu-nav-folder') ||
       link.closest('.header-menu-nav-item');
-    if (!folder) return;
+    if (!wrapper) return;
 
-    var toggle =
-      folder.querySelector('.header-menu-nav-folder-toggle') ||
-      folder.querySelector('button') ||
-      folder.querySelector('[aria-expanded]');
+    var content = wrapper.querySelector('.header-menu-nav-folder-content');
+    if (!content) return;
 
-    if (toggle && toggle !== link) {
-      toggle.click();
-    } else {
-      folder.classList.toggle('header-menu-nav-folder--active');
+    var isOpen = content.style.display === 'block';
+    content.style.display = isOpen ? '' : 'block';
+
+    var folder = wrapper.classList.contains('header-menu-nav-folder')
+      ? wrapper
+      : wrapper.querySelector('.header-menu-nav-folder');
+    if (folder) {
+      folder.classList.toggle('header-menu-nav-folder--active', !isOpen);
     }
   }, true);
 })();
