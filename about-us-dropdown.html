@@ -3,30 +3,36 @@
 // its own page (/about-1). Paste this whole block into
 // Settings > Advanced > Code Injection > Footer (NOT Custom CSS).
 //
-// Runs in the "capturing" phase (the "true" at the end of addEventListener)
-// so it intercepts the click BEFORE Squarespace's own navigation script
-// gets a chance to run.
-document.addEventListener('click', function (e) {
-  var link = e.target.closest('a[href*="/about-1"]');
+// Instead of trying to out-race Squarespace's own click handler (which
+// loses if their script attaches its listener first), this removes the
+// link's href entirely on page load — so there is nothing for
+// Squarespace's router to navigate to, no matter which script's click
+// handler runs first.
+document.addEventListener('DOMContentLoaded', function () {
+  var link = document.querySelector('a[href*="/about-1"]');
   if (!link) return;
 
-  e.preventDefault();
-  e.stopPropagation();
+  link.removeAttribute('href');
+  link.style.cursor = 'pointer';
 
   var folder =
     link.closest('.header-menu-nav-folder') ||
     link.closest('.header-menu-nav-item');
-  if (!folder) return;
 
-  var toggle =
-    folder.querySelector('.header-menu-nav-folder-toggle') ||
-    folder.querySelector('button') ||
-    folder.querySelector('[aria-expanded]');
+  link.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (!folder) return;
 
-  if (toggle && toggle !== link) {
-    toggle.click();
-  } else {
-    folder.classList.toggle('header-menu-nav-folder--active');
-  }
-}, true);
+    var toggle =
+      folder.querySelector('.header-menu-nav-folder-toggle') ||
+      folder.querySelector('button') ||
+      folder.querySelector('[aria-expanded]');
+
+    if (toggle && toggle !== link) {
+      toggle.click();
+    } else {
+      folder.classList.toggle('header-menu-nav-folder--active');
+    }
+  });
+});
 </script>
