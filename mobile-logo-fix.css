@@ -4,7 +4,7 @@
    taste (compare against your normal logo's mobile size). */
 @media screen and (max-width: 800px) {
   .header--menu-open .header-title-logo a {
-    width: 140px !important;
-    height: 32px !important;
+    width: 200px !important;
+    height: 48px !important;
   }
 }
