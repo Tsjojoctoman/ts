@@ -1,21 +1,25 @@
 <!-- Paste this whole block into Settings > Advanced > Code Injection > FOOTER -->
 
-<!--
-  EDIT THIS LIST: add/remove/fix entries for every page you want
-  searchable. title = what shows in results, url = the page's actual
-  URL (check Pages panel or your address bar for the real slug).
--->
 <script>
-window.TS_SEARCH_INDEX = [
-  { title: "Podcasts", url: "/podcasts" },
-  { title: "Shop", url: "/shop" },
-  { title: "Audiobooks", url: "/audiobooks" },
-  { title: "Events", url: "/events" },
+// EDIT THESE TWO LISTS:
+
+// 1. Collection pages to pull individual items from automatically
+//    (every book/episode/product/event inside them becomes searchable).
+//    Check Pages panel / your address bar for the real URL of each.
+window.TS_COLLECTION_PAGES = [
+  "/shop",
+  "/audiobooks",
+  "/podcasts",
+  "/events"
+  // add more collection pages here, e.g. "/blog"
+];
+
+// 2. Regular (non-collection) pages to include as-is.
+window.TS_STATIC_PAGES = [
   { title: "About Manifesto", url: "/about-manifesto" },
   { title: "Our Authors", url: "/our-authors" },
   { title: "Join Us", url: "/join-us" }
-  // Add more like this:
-  // { title: "Page Name", url: "/page-url" },
+  // add more like this: { title: "Page Name", url: "/page-url" },
 ];
 </script>
 
@@ -113,7 +117,10 @@ window.TS_SEARCH_INDEX = [
   var input = document.getElementById('ts-search-input');
   var form = document.getElementById('ts-search-form');
   var resultsEl = document.getElementById('ts-search-results');
-  var index = window.TS_SEARCH_INDEX || [];
+
+  var searchIndex = (window.TS_STATIC_PAGES || []).slice();
+  var indexLoaded = false;
+  var indexLoadingPromise = null;
 
   var actions = document.querySelector('.header-actions');
   if (actions) {
@@ -125,6 +132,7 @@ window.TS_SEARCH_INDEX = [
     toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     if (isOpen) {
       setTimeout(function () { input.focus(); }, 260);
+      loadCollectionsOnce();
     }
   });
 
@@ -135,15 +143,53 @@ window.TS_SEARCH_INDEX = [
     }
   });
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-  });
+  form.addEventListener('submit', function (e) { e.preventDefault(); });
 
-  // Client-side only — no network request, so no rate limit issue and
-  // safe to filter on every keystroke.
   input.addEventListener('input', function () {
     runSearch(input.value);
   });
+
+  // Fetches each collection page ONCE (the first time the panel opens),
+  // pulls every item's title + link out of it, and adds them to the
+  // search index. Cached after that — no repeated network requests.
+  function loadCollectionsOnce() {
+    if (indexLoadingPromise) return indexLoadingPromise;
+
+    var pages = window.TS_COLLECTION_PAGES || [];
+    if (!pages.length) {
+      indexLoaded = true;
+      return Promise.resolve();
+    }
+
+    resultsEl.innerHTML = input.value.trim()
+      ? '<div class="ts-empty">Loading…</div>'
+      : '';
+
+    indexLoadingPromise = Promise.all(
+      pages.map(function (pageUrl) {
+        return fetch(pageUrl + '?format=json')
+          .then(function (res) { return res.ok ? res.json() : null; })
+          .then(function (data) {
+            if (!data || !Array.isArray(data.items)) return;
+            data.items.forEach(function (item) {
+              if (!item || !item.title) return;
+              searchIndex.push({
+                title: item.title,
+                url: item.fullUrl || (pageUrl + '/' + item.urlId)
+              });
+            });
+          })
+          .catch(function (err) {
+            console.error('Could not load collection', pageUrl, err);
+          });
+      })
+    ).then(function () {
+      indexLoaded = true;
+      runSearch(input.value);
+    });
+
+    return indexLoadingPromise;
+  }
 
   function runSearch(query) {
     query = (query || '').trim().toLowerCase();
@@ -151,7 +197,11 @@ window.TS_SEARCH_INDEX = [
       resultsEl.innerHTML = '';
       return;
     }
-    var matches = index.filter(function (item) {
+    if (!indexLoaded) {
+      resultsEl.innerHTML = '<div class="ts-empty">Loading…</div>';
+      return;
+    }
+    var matches = searchIndex.filter(function (item) {
       return item.title.toLowerCase().indexOf(query) !== -1;
     });
     renderResults(matches);
@@ -162,7 +212,7 @@ window.TS_SEARCH_INDEX = [
       resultsEl.innerHTML = '<div class="ts-empty">No matches.</div>';
       return;
     }
-    var html = items.map(function (item) {
+    var html = items.slice(0, 20).map(function (item) {
       return '<a href="' + item.url + '">' + item.title + '</a>';
     }).join('');
     resultsEl.innerHTML = html;
