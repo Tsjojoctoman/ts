@@ -12,12 +12,10 @@
     <input type="text" name="query" id="ts-search-input" placeholder="Search…" autocomplete="off" />
     <button type="submit" aria-label="Submit search">Go</button>
   </form>
+  <div id="ts-search-results"></div>
 </div>
 
 <style>
-  /* No fixed positioning here anymore — the toggle button gets moved
-     into .header-actions by the script below, so it inherits the same
-     flex sizing/spacing as your cart icon automatically. */
   #ts-search-toggle {
     background: none;
     border: none;
@@ -40,6 +38,8 @@
     transform: translateY(-10px);
     transition: opacity 200ms ease, transform 200ms ease, visibility 200ms;
     z-index: 999;
+    max-height: 80vh;
+    overflow-y: auto;
   }
   #ts-search-panel.ts-open {
     opacity: 1;
@@ -67,6 +67,25 @@
     border-radius: 4px;
     cursor: pointer;
   }
+  #ts-search-results {
+    max-width: 600px;
+    margin: 12px auto 0;
+  }
+  #ts-search-results a {
+    display: block;
+    padding: 10px 4px;
+    border-bottom: 1px solid #eee;
+    color: #111;
+    text-decoration: none;
+  }
+  #ts-search-results a:hover {
+    background: #f7f7f7;
+  }
+  #ts-search-results .ts-empty,
+  #ts-search-results .ts-error {
+    padding: 10px 4px;
+    color: #777;
+  }
 </style>
 
 <script>
@@ -74,10 +93,11 @@
   var toggle = document.getElementById('ts-search-toggle');
   var panel = document.getElementById('ts-search-panel');
   var input = document.getElementById('ts-search-input');
+  var form = document.getElementById('ts-search-form');
+  var resultsEl = document.getElementById('ts-search-results');
+  var debounceTimer = null;
+  var currentQuery = '';
 
-  // Move the toggle button into the native header-actions row (next to
-  // the cart icon) so it lines up and sizes exactly like the icons
-  // already there, instead of being manually positioned with pixels.
   var actions = document.querySelector('.header-actions');
   if (actions) {
     actions.insertBefore(toggle, actions.firstChild);
@@ -97,5 +117,68 @@
       toggle.setAttribute('aria-expanded', 'false');
     }
   });
+
+  // Stop the form from ever doing a real page navigation.
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    runSearch(input.value);
+  });
+
+  input.addEventListener('input', function () {
+    clearTimeout(debounceTimer);
+    var value = input.value;
+    debounceTimer = setTimeout(function () {
+      runSearch(value);
+    }, 300);
+  });
+
+  function runSearch(query) {
+    query = (query || '').trim();
+    currentQuery = query;
+    if (!query) {
+      resultsEl.innerHTML = '';
+      return;
+    }
+    resultsEl.innerHTML = '<div class="ts-empty">Searching…</div>';
+
+    fetch('/search?format=json&query=' + encodeURIComponent(query))
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        // Only render if this response matches the latest thing typed
+        // (avoids an older, slower response overwriting a newer one).
+        if (query !== currentQuery) return;
+        renderResults(extractItems(data), query);
+      })
+      .catch(function (err) {
+        if (query !== currentQuery) return;
+        console.error('Search request failed:', err);
+        resultsEl.innerHTML = '<div class="ts-error">Search results could not be loaded. Press Enter to try the full search page instead.</div>';
+      });
+  }
+
+  // Squarespace's JSON search response shape isn't officially
+  // documented and can vary by template — this tries a few common
+  // locations for the results array.
+  function extractItems(data) {
+    if (!data) return [];
+    if (Array.isArray(data.items)) return data.items;
+    if (data.pages && Array.isArray(data.pages.items)) return data.pages.items;
+    if (data.result && Array.isArray(data.result.items)) return data.result.items;
+    return [];
+  }
+
+  function renderResults(items, query) {
+    if (!items.length) {
+      resultsEl.innerHTML =
+        '<div class="ts-empty">No instant results. Press Enter to see the full search page.</div>';
+      return;
+    }
+    var html = items.slice(0, 8).map(function (item) {
+      var title = item.title || item.name || 'Untitled';
+      var url = item.fullUrl || item.url || '#';
+      return '<a href="' + url + '">' + title + '</a>';
+    }).join('');
+    resultsEl.innerHTML = html;
+  }
 })();
 </script>
