@@ -15,16 +15,17 @@
 </div>
 
 <style>
+  /* No fixed positioning here anymore — the toggle button gets moved
+     into .header-actions by the script below, so it inherits the same
+     flex sizing/spacing as your cart icon automatically. */
   #ts-search-toggle {
-    position: fixed;
-    top: 20px;
-    right: 90px; /* move this left/right so it doesn't overlap your cart/burger icons */
-    z-index: 1000;
     background: none;
     border: none;
     padding: 6px;
     cursor: pointer;
     line-height: 0;
+    display: inline-flex;
+    align-items: center;
   }
   #ts-search-panel {
     position: fixed;
@@ -73,6 +74,14 @@
   var toggle = document.getElementById('ts-search-toggle');
   var panel = document.getElementById('ts-search-panel');
   var input = document.getElementById('ts-search-input');
+
+  // Move the toggle button into the native header-actions row (next to
+  // the cart icon) so it lines up and sizes exactly like the icons
+  // already there, instead of being manually positioned with pixels.
+  var actions = document.querySelector('.header-actions');
+  if (actions) {
+    actions.insertBefore(toggle, actions.firstChild);
+  }
 
   toggle.addEventListener('click', function () {
     var isOpen = panel.classList.toggle('ts-open');
