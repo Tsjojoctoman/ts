@@ -1,0 +1,6 @@
+/* Give the cart icon its own left margin, creating breathing room
+   between it and the search icon before it — fixing spacing at the
+   cart itself rather than patching it from the search icon's side. */
+.header-actions a.cart-link {
+  margin-left: 15px !important;
+}

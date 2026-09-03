@@ -30,15 +30,12 @@
         ourSvg.setAttribute('height', svgRect.height);
       }
     }
-    // Size is matched to the cart icon above, but spacing is NOT copied
-    // from the cart's own padding — its padding is close to zero (the
-    // gap between icons comes from elsewhere, e.g. a flex `gap` on the
-    // container), so copying it left almost no breathing room. Instead
-    // give our icon clean, explicit spacing on both sides. Adjust this
-    // one number for more/less gap on both sides at once.
+    // No extra margin here — spacing between this icon and the cart is
+    // handled by giving the cart its own margin-left in Custom CSS
+    // instead (see the .cart-link rule), so it's fixed at the source
+    // rather than patched around from this side.
     ourLink.style.display = 'inline-flex';
     ourLink.style.alignItems = 'center';
-    ourLink.style.margin = '0 15px 0 0';
 
     actions.insertBefore(clone, actions.firstChild);
   });
