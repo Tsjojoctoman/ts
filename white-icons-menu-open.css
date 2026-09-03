@@ -1,0 +1,16 @@
+/* Turn cart + search icons white while the red fullscreen menu is open.
+   These are more specific than the existing "always black" cart rule
+   (.header-actions .icon--fill svg { fill:#000000 !important; }), so
+   they win only in the menu-open state. */
+.header--menu-open .header-actions .icon--fill svg,
+.header--menu-open .header-actions .Cart-inner,
+.header--menu-open .header-actions .icon-cart-quantity,
+.header--menu-open .header-actions .sqs-cart-quantity,
+.header--menu-open .header-actions a.cart-link {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
+.header--menu-open #ts-search-link svg {
+  stroke: #ffffff !important;
+}
