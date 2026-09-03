@@ -1,5 +1,24 @@
 <!-- Paste this whole block into Settings > Advanced > Code Injection > FOOTER -->
 
+<!--
+  EDIT THIS LIST: add/remove/fix entries for every page you want
+  searchable. title = what shows in results, url = the page's actual
+  URL (check Pages panel or your address bar for the real slug).
+-->
+<script>
+window.TS_SEARCH_INDEX = [
+  { title: "Podcasts", url: "/podcasts" },
+  { title: "Shop", url: "/shop" },
+  { title: "Audiobooks", url: "/audiobooks" },
+  { title: "Events", url: "/events" },
+  { title: "About Manifesto", url: "/about-manifesto" },
+  { title: "Our Authors", url: "/our-authors" },
+  { title: "Join Us", url: "/join-us" }
+  // Add more like this:
+  // { title: "Page Name", url: "/page-url" },
+];
+</script>
+
 <button id="ts-search-toggle" aria-label="Open search" aria-expanded="false">
   <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="11" cy="11" r="7"></circle>
@@ -8,8 +27,8 @@
 </button>
 
 <div id="ts-search-panel">
-  <form action="/search" method="get" id="ts-search-form">
-    <input type="text" name="query" id="ts-search-input" placeholder="Search…" autocomplete="off" />
+  <form id="ts-search-form">
+    <input type="text" id="ts-search-input" placeholder="Search…" autocomplete="off" />
     <button type="submit" aria-label="Submit search">Go</button>
   </form>
   <div id="ts-search-results"></div>
@@ -81,8 +100,7 @@
   #ts-search-results a:hover {
     background: #f7f7f7;
   }
-  #ts-search-results .ts-empty,
-  #ts-search-results .ts-error {
+  #ts-search-results .ts-empty {
     padding: 10px 4px;
     color: #777;
   }
@@ -95,7 +113,7 @@
   var input = document.getElementById('ts-search-input');
   var form = document.getElementById('ts-search-form');
   var resultsEl = document.getElementById('ts-search-results');
-  var currentQuery = '';
+  var index = window.TS_SEARCH_INDEX || [];
 
   var actions = document.querySelector('.header-actions');
   if (actions) {
@@ -117,68 +135,35 @@
     }
   });
 
-  // Stop the form from ever doing a real page navigation. Search only
-  // fires on submit (Enter / "Go") now, not on every keystroke — typing
-  // live was firing a request per character and tripping Squarespace's
-  // rate limit (429), which is why results were failing to load.
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+  });
+
+  // Client-side only — no network request, so no rate limit issue and
+  // safe to filter on every keystroke.
+  input.addEventListener('input', function () {
     runSearch(input.value);
   });
 
   function runSearch(query) {
-    query = (query || '').trim();
-    currentQuery = query;
+    query = (query || '').trim().toLowerCase();
     if (!query) {
       resultsEl.innerHTML = '';
       return;
     }
-    resultsEl.innerHTML = '<div class="ts-empty">Searching…</div>';
-
-    fetch('/search?format=json&query=' + encodeURIComponent(query))
-      .then(function (res) {
-        if (res.status === 429) {
-          throw new Error('rate-limited');
-        }
-        return res.json();
-      })
-      .then(function (data) {
-        // Only render if this response matches the latest thing typed
-        // (avoids an older, slower response overwriting a newer one).
-        if (query !== currentQuery) return;
-        renderResults(extractItems(data), query);
-      })
-      .catch(function (err) {
-        if (query !== currentQuery) return;
-        console.error('Search request failed:', err);
-        var message = err && err.message === 'rate-limited'
-          ? 'Too many searches too quickly — wait a few seconds and try again.'
-          : 'Search results could not be loaded. Press Enter to try the full search page instead.';
-        resultsEl.innerHTML = '<div class="ts-error">' + message + '</div>';
-      });
+    var matches = index.filter(function (item) {
+      return item.title.toLowerCase().indexOf(query) !== -1;
+    });
+    renderResults(matches);
   }
 
-  // Squarespace's JSON search response shape isn't officially
-  // documented and can vary by template — this tries a few common
-  // locations for the results array.
-  function extractItems(data) {
-    if (!data) return [];
-    if (Array.isArray(data.items)) return data.items;
-    if (data.pages && Array.isArray(data.pages.items)) return data.pages.items;
-    if (data.result && Array.isArray(data.result.items)) return data.result.items;
-    return [];
-  }
-
-  function renderResults(items, query) {
+  function renderResults(items) {
     if (!items.length) {
-      resultsEl.innerHTML =
-        '<div class="ts-empty">No instant results. Press Enter to see the full search page.</div>';
+      resultsEl.innerHTML = '<div class="ts-empty">No matches.</div>';
       return;
     }
-    var html = items.slice(0, 8).map(function (item) {
-      var title = item.title || item.name || 'Untitled';
-      var url = item.fullUrl || item.url || '#';
-      return '<a href="' + url + '">' + title + '</a>';
+    var html = items.map(function (item) {
+      return '<a href="' + item.url + '">' + item.title + '</a>';
     }).join('');
     resultsEl.innerHTML = html;
   }
