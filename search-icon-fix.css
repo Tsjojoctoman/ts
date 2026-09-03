@@ -1,0 +1,19 @@
+/* Replaces the old "4. STRIP HIDE SEARCH AND LOGIN..." rule.
+   Search is no longer hidden (this un-hides Squarespace's native search
+   trigger, which opens its own built-in dropdown/overlay — no custom
+   code needed for that part). Login stays hidden as before. */
+.header-actions .user-accounts-link,
+.header-actions .user-accounts-text {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Force the native search trigger to show as icon-only (hide any text
+   label next to/inside it, keep the icon/svg visible) */
+.header-actions .header-actions-action--search {
+  font-size: 0 !important;
+}
+.header-actions .header-actions-action--search svg,
+.header-actions .header-actions-action--search .icon {
+  font-size: initial !important;
+}
