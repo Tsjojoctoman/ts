@@ -1,0 +1,41 @@
+<script>
+// Make "ABOUT US" expand its dropdown in place instead of navigating to
+// its own page. Paste this whole block into
+// Settings > Advanced > Code Injection > Footer (NOT Custom CSS).
+document.addEventListener('DOMContentLoaded', function () {
+  var wrappers = document.querySelectorAll('.header-menu-nav-folder-wrapper');
+  wrappers.forEach(function (wrapper) {
+    var folder = wrapper.querySelector('.header-menu-nav-folder');
+    if (!folder) return;
+    var content = wrapper.querySelector('.header-menu-nav-folder-content');
+
+    // Find the main "ABOUT US" title link, but skip any link that's
+    // inside the dropdown content itself (so "About Manifesto" and
+    // "Our Authors" keep working normally).
+    var titleLink = null;
+    folder.querySelectorAll('a').forEach(function (a) {
+      if (content && content.contains(a)) return;
+      if (a.textContent.trim().toUpperCase().includes('ABOUT US')) {
+        titleLink = a;
+      }
+    });
+    if (!titleLink) return;
+
+    // Find the existing "+" toggle so we can just trigger Squarespace's
+    // own expand/collapse behavior instead of reimplementing it.
+    var toggle =
+      wrapper.querySelector('.header-menu-nav-folder-toggle') ||
+      folder.querySelector('button') ||
+      folder.querySelector('[aria-expanded]');
+
+    titleLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (toggle) {
+        toggle.click();
+      } else {
+        folder.classList.toggle('header-menu-nav-folder--active');
+      }
+    });
+  });
+});
+</script>
