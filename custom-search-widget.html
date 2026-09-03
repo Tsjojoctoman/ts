@@ -9,25 +9,40 @@
   </a>
 </template>
 
-<style>
-  .ts-search-link {
-    display: inline-flex;
-    align-items: center;
-    padding: 6px;
-    line-height: 0;
-  }
-</style>
-
 <script>
 (function () {
   var template = document.getElementById('ts-search-link-template');
 
-  // Insert a copy of the icon into EVERY .header-actions found — the
-  // header has separate desktop and mobile structures, each with its
-  // own .header-actions, so a single insert only shows on one of them.
-  var allActions = document.querySelectorAll('.header-actions');
-  allActions.forEach(function (actions) {
+  document.querySelectorAll('.header-actions').forEach(function (actions) {
+    // Find the cart icon (or whatever's already in this container)
+    // BEFORE we insert our own, so we copy its real size/spacing.
+    var existingSvg = actions.querySelector('svg');
+    var existingLink = existingSvg ? existingSvg.closest('a') : null;
+
     var clone = template.content.cloneNode(true);
+    var ourLink = clone.querySelector('.ts-search-link');
+    var ourSvg = ourLink.querySelector('svg');
+
+    if (existingSvg) {
+      var svgRect = existingSvg.getBoundingClientRect();
+      if (svgRect.width && svgRect.height) {
+        ourSvg.setAttribute('width', svgRect.width);
+        ourSvg.setAttribute('height', svgRect.height);
+      }
+    }
+    if (existingLink) {
+      var cs = getComputedStyle(existingLink);
+      ourLink.style.display = 'inline-flex';
+      ourLink.style.alignItems = 'center';
+      ourLink.style.padding = cs.padding;
+      ourLink.style.margin = cs.margin;
+    } else {
+      // Fallback if nothing else is in the container yet
+      ourLink.style.display = 'inline-flex';
+      ourLink.style.alignItems = 'center';
+      ourLink.style.padding = '6px';
+    }
+
     actions.insertBefore(clone, actions.firstChild);
   });
 })();
