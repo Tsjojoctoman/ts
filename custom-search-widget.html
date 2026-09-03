@@ -1,28 +1,5 @@
 <!-- Paste this whole block into Settings > Advanced > Code Injection > FOOTER -->
 
-<script>
-// EDIT THESE TWO LISTS:
-
-// 1. Collection pages to pull individual items from automatically
-//    (every book/episode/product/event inside them becomes searchable).
-//    Check Pages panel / your address bar for the real URL of each.
-window.TS_COLLECTION_PAGES = [
-  "/shop",
-  "/audiobooks",
-  "/podcasts",
-  "/events"
-  // add more collection pages here, e.g. "/blog"
-];
-
-// 2. Regular (non-collection) pages to include as-is.
-window.TS_STATIC_PAGES = [
-  { title: "About Manifesto", url: "/about-manifesto" },
-  { title: "Our Authors", url: "/our-authors" },
-  { title: "Join Us", url: "/join-us" }
-  // add more like this: { title: "Page Name", url: "/page-url" },
-];
-</script>
-
 <button id="ts-search-toggle" aria-label="Open search" aria-expanded="false">
   <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="11" cy="11" r="7"></circle>
@@ -31,11 +8,10 @@ window.TS_STATIC_PAGES = [
 </button>
 
 <div id="ts-search-panel">
-  <form id="ts-search-form">
-    <input type="text" id="ts-search-input" placeholder="Search…" autocomplete="off" />
+  <form action="/search" method="get" id="ts-search-form">
+    <input type="text" name="query" id="ts-search-input" placeholder="Search…" autocomplete="off" />
     <button type="submit" aria-label="Submit search">Go</button>
   </form>
-  <div id="ts-search-results"></div>
 </div>
 
 <style>
@@ -61,8 +37,6 @@ window.TS_STATIC_PAGES = [
     transform: translateY(-10px);
     transition: opacity 200ms ease, transform 200ms ease, visibility 200ms;
     z-index: 999;
-    max-height: 80vh;
-    overflow-y: auto;
   }
   #ts-search-panel.ts-open {
     opacity: 1;
@@ -90,24 +64,6 @@ window.TS_STATIC_PAGES = [
     border-radius: 4px;
     cursor: pointer;
   }
-  #ts-search-results {
-    max-width: 600px;
-    margin: 12px auto 0;
-  }
-  #ts-search-results a {
-    display: block;
-    padding: 10px 4px;
-    border-bottom: 1px solid #eee;
-    color: #111;
-    text-decoration: none;
-  }
-  #ts-search-results a:hover {
-    background: #f7f7f7;
-  }
-  #ts-search-results .ts-empty {
-    padding: 10px 4px;
-    color: #777;
-  }
 </style>
 
 <script>
@@ -115,12 +71,6 @@ window.TS_STATIC_PAGES = [
   var toggle = document.getElementById('ts-search-toggle');
   var panel = document.getElementById('ts-search-panel');
   var input = document.getElementById('ts-search-input');
-  var form = document.getElementById('ts-search-form');
-  var resultsEl = document.getElementById('ts-search-results');
-
-  var searchIndex = (window.TS_STATIC_PAGES || []).slice();
-  var indexLoaded = false;
-  var indexLoadingPromise = null;
 
   var actions = document.querySelector('.header-actions');
   if (actions) {
@@ -132,7 +82,6 @@ window.TS_STATIC_PAGES = [
     toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     if (isOpen) {
       setTimeout(function () { input.focus(); }, 260);
-      loadCollectionsOnce();
     }
   });
 
@@ -143,79 +92,9 @@ window.TS_STATIC_PAGES = [
     }
   });
 
-  form.addEventListener('submit', function (e) { e.preventDefault(); });
-
-  input.addEventListener('input', function () {
-    runSearch(input.value);
-  });
-
-  // Fetches each collection page ONCE (the first time the panel opens),
-  // pulls every item's title + link out of it, and adds them to the
-  // search index. Cached after that — no repeated network requests.
-  function loadCollectionsOnce() {
-    if (indexLoadingPromise) return indexLoadingPromise;
-
-    var pages = window.TS_COLLECTION_PAGES || [];
-    if (!pages.length) {
-      indexLoaded = true;
-      return Promise.resolve();
-    }
-
-    resultsEl.innerHTML = input.value.trim()
-      ? '<div class="ts-empty">Loading…</div>'
-      : '';
-
-    indexLoadingPromise = Promise.all(
-      pages.map(function (pageUrl) {
-        return fetch(pageUrl + '?format=json')
-          .then(function (res) { return res.ok ? res.json() : null; })
-          .then(function (data) {
-            if (!data || !Array.isArray(data.items)) return;
-            data.items.forEach(function (item) {
-              if (!item || !item.title) return;
-              searchIndex.push({
-                title: item.title,
-                url: item.fullUrl || (pageUrl + '/' + item.urlId)
-              });
-            });
-          })
-          .catch(function (err) {
-            console.error('Could not load collection', pageUrl, err);
-          });
-      })
-    ).then(function () {
-      indexLoaded = true;
-      runSearch(input.value);
-    });
-
-    return indexLoadingPromise;
-  }
-
-  function runSearch(query) {
-    query = (query || '').trim().toLowerCase();
-    if (!query) {
-      resultsEl.innerHTML = '';
-      return;
-    }
-    if (!indexLoaded) {
-      resultsEl.innerHTML = '<div class="ts-empty">Loading…</div>';
-      return;
-    }
-    var matches = searchIndex.filter(function (item) {
-      return item.title.toLowerCase().indexOf(query) !== -1;
-    });
-    renderResults(matches);
-  }
-
-  function renderResults(items) {
-    if (!items.length) {
-      resultsEl.innerHTML = '<div class="ts-empty">No matches.</div>';
-      return;
-    }
-    var html = items.slice(0, 20).map(function (item) {
-      return '<a href="' + item.url + '">' + item.title + '</a>';
-    }).join('');
-    resultsEl.innerHTML = html;
-  }
+  // No preventDefault here — submitting genuinely navigates to
+  // Squarespace's native /search results page, which is the only thing
+  // that can actually find content (like a specific book) across the
+  // whole site.
 })();
 </script>
