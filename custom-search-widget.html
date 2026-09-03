@@ -1,14 +1,16 @@
 <!-- Paste this whole block into Settings > Advanced > Code Injection > FOOTER -->
 
-<a href="/search" id="ts-search-link" aria-label="Search">
-  <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="11" cy="11" r="7"></circle>
-    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-  </svg>
-</a>
+<template id="ts-search-link-template">
+  <a href="/search" class="ts-search-link" aria-label="Search">
+    <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="7"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+  </a>
+</template>
 
 <style>
-  #ts-search-link {
+  .ts-search-link {
     display: inline-flex;
     align-items: center;
     padding: 6px;
@@ -18,10 +20,15 @@
 
 <script>
 (function () {
-  var link = document.getElementById('ts-search-link');
-  var actions = document.querySelector('.header-actions');
-  if (actions) {
-    actions.insertBefore(link, actions.firstChild);
-  }
+  var template = document.getElementById('ts-search-link-template');
+
+  // Insert a copy of the icon into EVERY .header-actions found — the
+  // header has separate desktop and mobile structures, each with its
+  // own .header-actions, so a single insert only shows on one of them.
+  var allActions = document.querySelectorAll('.header-actions');
+  allActions.forEach(function (actions) {
+    var clone = template.content.cloneNode(true);
+    actions.insertBefore(clone, actions.firstChild);
+  });
 })();
 </script>
