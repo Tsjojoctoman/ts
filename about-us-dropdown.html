@@ -1,41 +1,32 @@
 <script>
 // Make "ABOUT US" expand its dropdown in place instead of navigating to
-// its own page. Paste this whole block into
+// its own page (/about-1). Paste this whole block into
 // Settings > Advanced > Code Injection > Footer (NOT Custom CSS).
-document.addEventListener('DOMContentLoaded', function () {
-  var wrappers = document.querySelectorAll('.header-menu-nav-folder-wrapper');
-  wrappers.forEach(function (wrapper) {
-    var folder = wrapper.querySelector('.header-menu-nav-folder');
-    if (!folder) return;
-    var content = wrapper.querySelector('.header-menu-nav-folder-content');
+//
+// Runs in the "capturing" phase (the "true" at the end of addEventListener)
+// so it intercepts the click BEFORE Squarespace's own navigation script
+// gets a chance to run.
+document.addEventListener('click', function (e) {
+  var link = e.target.closest('a[href*="/about-1"]');
+  if (!link) return;
 
-    // Find the main "ABOUT US" title link, but skip any link that's
-    // inside the dropdown content itself (so "About Manifesto" and
-    // "Our Authors" keep working normally).
-    var titleLink = null;
-    folder.querySelectorAll('a').forEach(function (a) {
-      if (content && content.contains(a)) return;
-      if (a.textContent.trim().toUpperCase().includes('ABOUT US')) {
-        titleLink = a;
-      }
-    });
-    if (!titleLink) return;
+  e.preventDefault();
+  e.stopPropagation();
 
-    // Find the existing "+" toggle so we can just trigger Squarespace's
-    // own expand/collapse behavior instead of reimplementing it.
-    var toggle =
-      wrapper.querySelector('.header-menu-nav-folder-toggle') ||
-      folder.querySelector('button') ||
-      folder.querySelector('[aria-expanded]');
+  var folder =
+    link.closest('.header-menu-nav-folder') ||
+    link.closest('.header-menu-nav-item');
+  if (!folder) return;
 
-    titleLink.addEventListener('click', function (e) {
-      e.preventDefault();
-      if (toggle) {
-        toggle.click();
-      } else {
-        folder.classList.toggle('header-menu-nav-folder--active');
-      }
-    });
-  });
-});
+  var toggle =
+    folder.querySelector('.header-menu-nav-folder-toggle') ||
+    folder.querySelector('button') ||
+    folder.querySelector('[aria-expanded]');
+
+  if (toggle && toggle !== link) {
+    toggle.click();
+  } else {
+    folder.classList.toggle('header-menu-nav-folder--active');
+  }
+}, true);
 </script>
