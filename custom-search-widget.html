@@ -1,0 +1,92 @@
+<!-- Paste this whole block into Settings > Advanced > Code Injection > FOOTER -->
+
+<button id="ts-search-toggle" aria-label="Open search" aria-expanded="false">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="11" cy="11" r="7"></circle>
+    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+</button>
+
+<div id="ts-search-panel">
+  <form action="/search" method="get" id="ts-search-form">
+    <input type="text" name="query" id="ts-search-input" placeholder="Search…" autocomplete="off" />
+    <button type="submit" aria-label="Submit search">Go</button>
+  </form>
+</div>
+
+<style>
+  #ts-search-toggle {
+    position: fixed;
+    top: 20px;
+    right: 90px; /* move this left/right so it doesn't overlap your cart/burger icons */
+    z-index: 1000;
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    line-height: 0;
+  }
+  #ts-search-panel {
+    position: fixed;
+    top: var(--header-height, 90px);
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 200ms ease, transform 200ms ease, visibility 200ms;
+    z-index: 999;
+  }
+  #ts-search-panel.ts-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  #ts-search-form {
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto;
+    gap: 8px;
+  }
+  #ts-search-input {
+    flex: 1;
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  #ts-search-form button[type="submit"] {
+    padding: 10px 16px;
+    border: none;
+    background: #E60F19;
+    color: #ffffff;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+(function () {
+  var toggle = document.getElementById('ts-search-toggle');
+  var panel = document.getElementById('ts-search-panel');
+  var input = document.getElementById('ts-search-input');
+
+  toggle.addEventListener('click', function () {
+    var isOpen = panel.classList.toggle('ts-open');
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    if (isOpen) {
+      setTimeout(function () { input.focus(); }, 260);
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      panel.classList.remove('ts-open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+</script>
