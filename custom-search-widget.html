@@ -30,12 +30,13 @@
         ourSvg.setAttribute('height', svgRect.height);
       }
     }
-    // No extra margin here — spacing between this icon and the cart is
-    // handled by giving the cart its own margin-left in Custom CSS
-    // instead (see the .cart-link rule), so it's fixed at the source
-    // rather than patched around from this side.
+    // Set directly on the element with setProperty(...,'important') so
+    // it wins over any other CSS regardless of specificity — the cart's
+    // own margin-left approach wasn't taking effect, so controlling
+    // spacing here instead, on the element we fully own.
     ourLink.style.display = 'inline-flex';
     ourLink.style.alignItems = 'center';
+    ourLink.style.setProperty('margin-right', '20px', 'important');
 
     actions.insertBefore(clone, actions.firstChild);
   });
