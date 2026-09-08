@@ -1,0 +1,45 @@
+/* Big red "NOW" label, pinned to the top-left corner of the section
+   with no gap above it — see now-label.html, which injects the actual
+   <h1>NOW</h1> element into this section (Squarespace's page editor
+   doesn't let us add arbitrary markup inside an existing section, so
+   the two files work together: JS adds the element, this file styles
+   and positions it).
+
+   Paste into Settings > Advanced > Code Injection > HEADER, alongside
+   now-label.html. */
+
+section[data-section-id="6a92cde6bbed3c398a6038e1"] {
+  /* the label is positioned absolute against this section, so it needs
+     to be the positioning context */
+  position: relative !important;
+  /* no gap above the label */
+  padding-top: 0 !important;
+}
+
+section[data-section-id="6a92cde6bbed3c398a6038e1"] .now-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  max-width: 90%;
+  color: #E60F19;
+  font-size: clamp(3rem, 11vw, 9rem);
+  line-height: 0.85;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  z-index: 5;
+  /* decorative label, shouldn't intercept clicks meant for content
+     underneath/behind it */
+  pointer-events: none;
+}
+
+/* Scale down a bit further on narrow phones so the "N" doesn't ever
+   crowd the edge of the viewport */
+@media screen and (max-width: 400px) {
+  section[data-section-id="6a92cde6bbed3c398a6038e1"] .now-label {
+    font-size: clamp(2.75rem, 16vw, 4rem);
+  }
+}
+/* end NOW label */
