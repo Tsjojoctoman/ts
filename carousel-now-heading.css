@@ -1,0 +1,51 @@
+/* Carousel section (data-section-id="6a92cde6bbed3c398a6038e1"):
+   - hide the description text under the title
+   - pin the title flush to the top of the section, no gap above it
+   - left-aligned instead of centered
+
+   In the Squarespace editor, open this section, click into its Title
+   text, and set it to just "NOW" (use the text-style dropdown in the
+   editing toolbar to set it to Heading 1). This CSS just repositions
+   whatever title text is already there and hides the description line
+   under it — it doesn't need to know the text itself.
+
+   Squarespace names these classes differently depending on which
+   gallery/carousel design is selected, so a few common variants are
+   covered below. If nothing changes after pasting this in: right-click
+   the description text on your live page > Inspect, copy its actual
+   class name, and add a matching selector below (same pattern, just
+   swap the class name). */
+
+/* no gap above the section/title */
+section[data-section-id="6a92cde6bbed3c398a6038e1"] {
+  padding-top: 0 !important;
+}
+
+/* hide the description text under the title */
+section[data-section-id="6a92cde6bbed3c398a6038e1"] .section-description,
+section[data-section-id="6a92cde6bbed3c398a6038e1"] .description,
+section[data-section-id="6a92cde6bbed3c398a6038e1"] .intro-description,
+section[data-section-id="6a92cde6bbed3c398a6038e1"] p.description {
+  display: none !important;
+}
+
+/* pin the title's container to the top-left instead of centered */
+section[data-section-id="6a92cde6bbed3c398a6038e1"] .content,
+section[data-section-id="6a92cde6bbed3c398a6038e1"] .content-wrapper,
+section[data-section-id="6a92cde6bbed3c398a6038e1"] .section-border {
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* the title itself: no default margin, left aligned, top of its box */
+section[data-section-id="6a92cde6bbed3c398a6038e1"] .section-title,
+section[data-section-id="6a92cde6bbed3c398a6038e1"] h1.title,
+section[data-section-id="6a92cde6bbed3c398a6038e1"] h2.title {
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  align-self: flex-start !important;
+}
+/* end carousel NOW heading */
