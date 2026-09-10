@@ -1,0 +1,14 @@
+/* Remove "Fill Screen" height + extra top/bottom spacing on the events
+   list section, so it hugs its content instead of stretching to fill
+   the viewport height. */
+section[data-section-id="6a9aefbb49bad532790a21ba"],
+section[data-section-id="6a9aefbb49bad532790a21ba"] .content-wrapper,
+section[data-section-id="6a9aefbb49bad532790a21ba"] .section-background {
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+section[data-section-id="6a9aefbb49bad532790a21ba"] {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
