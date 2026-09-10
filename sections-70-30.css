@@ -51,15 +51,20 @@ section[data-section-id="6a9aefbb49bad532790a21ba"] .user-items-list {
     flex: 0 0 100% !important;
   }
 
-  /* Force the item container to stack vertically instead of scrolling
-     horizontally as a carousel */
-  section[data-section-id="6a9aefbb49bad532790a21ba"] .user-items-list {
+  /* Force the carousel track to stack vertically instead of scrolling
+     horizontally (confirmed via Inspect: .user-items-list-carousel is
+     the scrolling region, .user-items-list-carousel__gutter is the
+     row that holds the cards) */
+  section[data-section-id="6a9aefbb49bad532790a21ba"] .user-items-list-carousel {
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+  }
+  section[data-section-id="6a9aefbb49bad532790a21ba"] .user-items-list-carousel__gutter {
     display: flex !important;
     flex-direction: column !important;
-    overflow-x: visible !important;
     flex-wrap: nowrap !important;
   }
-  section[data-section-id="6a9aefbb49bad532790a21ba"] .user-items-list > * {
+  section[data-section-id="6a9aefbb49bad532790a21ba"] .user-items-list-carousel__gutter > * {
     width: 100% !important;
     max-width: 100% !important;
     flex: 0 0 auto !important;
@@ -67,6 +72,8 @@ section[data-section-id="6a9aefbb49bad532790a21ba"] .user-items-list {
   }
 
   /* Hide the prev/next carousel arrows — nothing to scroll once stacked */
+  section[data-section-id="6a9aefbb49bad532790a21ba"] [aria-label*="Previous" i],
+  section[data-section-id="6a9aefbb49bad532790a21ba"] [aria-label*="Next" i],
   section[data-section-id="6a9aefbb49bad532790a21ba"] [class*="arrow"],
   section[data-section-id="6a9aefbb49bad532790a21ba"] [class*="pagination"] {
     display: none !important;
