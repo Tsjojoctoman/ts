@@ -1,14 +1,10 @@
-/* Remove "Fill Screen" height + extra top/bottom spacing on the events
-   list section, so it hugs its content instead of stretching to fill
-   the viewport height. */
-section[data-section-id="6a9aefbb49bad532790a21ba"],
-section[data-section-id="6a9aefbb49bad532790a21ba"] .content-wrapper,
-section[data-section-id="6a9aefbb49bad532790a21ba"] .section-background {
+/* Remove the inline top/bottom padding and min-height Squarespace sets
+   on the inner .user-items-list div of the events list section
+   (confirmed via DevTools: style="min-height:100px; padding-top:3.3vmax;
+   padding-bottom:3.3vmax;"). Scoped to this specific section so it
+   doesn't affect any other list section on the site. */
+section[data-section-id="6a9aefbb49bad532790a21ba"] .user-items-list {
   min-height: 0 !important;
-  height: auto !important;
-}
-
-section[data-section-id="6a9aefbb49bad532790a21ba"] {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
