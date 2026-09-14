@@ -1,81 +1,60 @@
 /* ============================================================
-   Video section (30%) + Events list section (70%)
-   All rules for this pairing live in this ONE file/snippet so
-   nothing gets lost when updating — paste the whole thing into
-   Code Injection > Header, replacing anything else there for
-   these two sections.
+   All custom section CSS currently live in Code Injection > Header
+   for the Events page and related sections. Kept here in sync for
+   reference.
    ============================================================ */
 
-/* --- Desktop: side by side, 70/30 --- */
-body:not(.sqs-edit-mode-active) section.region:has(section[data-section-id="6a9aefbb49bad532790a21ba"]):has(section[data-section-id="6aa181b6bd4b0e75fcfbaed5"]),
-body:not(.sqs-edit-mode-active) #siteWrapper .sections:has(section[data-section-id="6a9aefbb49bad532790a21ba"]):has(section[data-section-id="6aa181b6bd4b0e75fcfbaed5"]) {
+/* --- Desktop: side by side, 70/30 (events list + video) --- */
+section.region:has(section[data-section-id="6a9ed1cd7e0d0478a5573e98"]):has(section[data-section-id="6aa181b6bd4b0e75fcfbaed5"]),
+#siteWrapper .sections:has(section[data-section-id="6a9ed1cd7e0d0478a5573e98"]):has(section[data-section-id="6aa181b6bd4b0e75fcfbaed5"]) {
   display: flex;
   flex-wrap: wrap;
 }
 
-/* Events list section: 70% width */
-section[data-section-id="6a9aefbb49bad532790a21ba"] {
+section[data-section-id="6a9ed1cd7e0d0478a5573e98"] {
   width: 70% !important;
   flex: 0 0 70% !important;
   box-sizing: border-box !important;
 }
 
-/* Video section: 30% width */
 section[data-section-id="6aa181b6bd4b0e75fcfbaed5"] {
   width: 30% !important;
   flex: 0 0 30% !important;
   box-sizing: border-box !important;
 }
 
-/* --- Remove the events list's native fill-screen height / vmax padding --- */
-section[data-section-id="6a9aefbb49bad532790a21ba"] {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-section[data-section-id="6a9aefbb49bad532790a21ba"] .content-wrapper,
-section[data-section-id="6a9aefbb49bad532790a21ba"] .section-background,
-section[data-section-id="6a9aefbb49bad532790a21ba"] .user-items-list {
-  min-height: 0 !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-}
-
-/* --- Mobile: stack both sections full-width, and turn the events
-   carousel into a simple stacked list instead of horizontal scroll --- */
+/* --- Mobile: 50/50 instead of stacking --- */
 @media screen and (max-width: 800px) {
-  section[data-section-id="6a9aefbb49bad532790a21ba"],
+  section[data-section-id="6a9ed1cd7e0d0478a5573e98"],
   section[data-section-id="6aa181b6bd4b0e75fcfbaed5"] {
-    width: 100% !important;
-    flex: 0 0 100% !important;
+    width: 50% !important;
+    flex: 0 0 50% !important;
   }
+}
 
-  /* Force the carousel track to stack vertically instead of scrolling
-     horizontally (confirmed via Inspect: .user-items-list-carousel is
-     the scrolling region, .user-items-list-carousel__gutter is the
-     row that holds the cards) */
-  section[data-section-id="6a9aefbb49bad532790a21ba"] .user-items-list-carousel {
-    overflow-x: visible !important;
-    overflow-y: visible !important;
-  }
-  section[data-section-id="6a9aefbb49bad532790a21ba"] .user-items-list-carousel__gutter {
-    display: flex !important;
-    flex-direction: column !important;
-    flex-wrap: nowrap !important;
-  }
-  section[data-section-id="6a9aefbb49bad532790a21ba"] .user-items-list-carousel__gutter > * {
-    width: 100% !important;
-    max-width: 100% !important;
-    flex: 0 0 auto !important;
-    margin-bottom: 24px !important;
-  }
+/* --- Remove fill-height / header-offset gap on the EVENTS accordion
+   title section --- */
+section[data-section-id="6a9ecb4b616f885259306a1c"] {
+  --header-offset: 0px !important;
+  min-height: 0 !important;
+  height: auto !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+section[data-section-id="6a9ecb4b616f885259306a1c"] .section-border,
+section[data-section-id="6a9ecb4b616f885259306a1c"] .content-wrapper,
+section[data-section-id="6a9ecb4b616f885259306a1c"] .fluid-engine {
+  min-height: 0 !important;
+  height: auto !important;
+}
 
-  /* Hide the prev/next carousel arrows — nothing to scroll once stacked */
-  section[data-section-id="6a9aefbb49bad532790a21ba"] [aria-label*="Previous" i],
-  section[data-section-id="6a9aefbb49bad532790a21ba"] [aria-label*="Next" i],
-  section[data-section-id="6a9aefbb49bad532790a21ba"] [class*="arrow"],
-  section[data-section-id="6a9aefbb49bad532790a21ba"] [class*="pagination"] {
-    display: none !important;
-  }
+/* --- Align "READ" buttons to the bottom of each card regardless of
+   description length, in the card/list section --- */
+section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__gutter > * {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__gutter > * > *:last-child {
+  margin-top: auto !important;
 }
