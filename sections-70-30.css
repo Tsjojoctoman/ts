@@ -399,3 +399,21 @@ section[data-section-id="6aa953aa508cf10f9f304a20"] .list-item-content__button-w
     display: none !important;
   }
 }
+
+/* --- Left-align the "READ" button for section 6aa953aa508cf10f9f304a20.
+   Required an extra layer beyond .button-wrapper: the real position
+   is controlled by .list-item-content__button-container, which has a
+   native Squarespace rule (.user-items-list-carousel[data-button-
+   placement="center"] .list-item-content__button-container {
+   margin-left:auto; margin-right:auto; }) centering it via the
+   carousel's own data-button-placement attribute. Confirmed via
+   Inspect. --- */
+section[data-section-id="6aa953aa508cf10f9f304a20"] .list-item-content__button-container {
+  display: flex !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+  margin-top: 7% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  max-width: 100% !important;
+}
