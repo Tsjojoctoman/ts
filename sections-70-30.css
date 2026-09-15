@@ -48,21 +48,33 @@ section[data-section-id="6a9ecb4b616f885259306a1c"] .fluid-engine {
   height: auto !important;
 }
 
-/* --- Align "READ" buttons to the bottom of each card regardless of
-   description length, in the card/list section. Uses absolute
-   positioning (pinned to the card's bottom edge) instead of flexbox
-   margin-top:auto, since the percentage-height chain through
-   .list-item-content wasn't resolving reliably. Confirmed real class
-   names via Inspect: .user-items-list-carousel__slide (card),
-   .list-item-content__button-wrapper (button). Adjust padding-bottom
-   to match the actual button height if it overlaps the description. */
-section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__slide {
-  position: relative !important;
-  padding-bottom: 80px !important;
+/* --- Equal-height cards + full-width "READ" button band at the
+   bottom, in the card/list section. Fixed height on .list-item-content
+   (rather than relying on grid/flex auto-stretch, which wasn't
+   resolving reliably here) guarantees every card matches regardless
+   of description length. Confirmed real class names via Inspect:
+   .list-item-content, .list-item-content__text-wrapper,
+   .list-item-content__button-wrapper. If a much longer/shorter
+   description gets added later, adjust the 260px height below. */
+section[data-section-id="6aa80c05866d1f24313a8193"] .list-item-content {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 260px !important;
+}
+section[data-section-id="6aa80c05866d1f24313a8193"] .list-item-content__text-wrapper {
+  flex: 1 1 auto !important;
 }
 section[data-section-id="6aa80c05866d1f24313a8193"] .list-item-content__button-wrapper {
-  position: absolute !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+section[data-section-id="6aa80c05866d1f24313a8193"] .list-item-content__button-wrapper a,
+section[data-section-id="6aa80c05866d1f24313a8193"] .list-item-content__button-wrapper button {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
 }
