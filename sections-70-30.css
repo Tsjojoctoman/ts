@@ -322,3 +322,80 @@ section[data-section-id="6aa951a81a1dc054924734cd"] {
     flex: 0 0 50% !important;
   }
 }
+
+/* ============================================================
+   Third duplicate of the card/list section CSS, for section
+   "6aa953aa508cf10f9f304a20".
+   ============================================================ */
+section[data-section-id="6aa953aa508cf10f9f304a20"] svg.arrow-icon,
+section[data-section-id="6aa953aa508cf10f9f304a20"] svg.mobile-arrow-icon {
+  display: none !important;
+}
+section[data-section-id="6aa953aa508cf10f9f304a20"] button[class*="__arrow-button"] {
+  background-color: #E60F19 !important;
+  border-radius: 0 !important;
+  width: 44px !important;
+  height: 44px !important;
+  opacity: 1 !important;
+}
+
+section[data-section-id="6aa953aa508cf10f9f304a20"] {
+  padding-top: 0 !important;
+}
+section[data-section-id="6aa953aa508cf10f9f304a20"] .user-items-list,
+section[data-section-id="6aa953aa508cf10f9f304a20"] .content-wrapper,
+section[data-section-id="6aa953aa508cf10f9f304a20"] .section-background {
+  padding-top: 0 !important;
+  min-height: 0 !important;
+}
+
+section[data-section-id="6aa953aa508cf10f9f304a20"] .list-item-content {
+  position: relative !important;
+  height: 100px !important;
+  padding-bottom: 70px !important;
+}
+section[data-section-id="6aa953aa508cf10f9f304a20"] .list-item-content__button-wrapper {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+section[data-section-id="6aa953aa508cf10f9f304a20"] .list-item-content__button-wrapper a,
+section[data-section-id="6aa953aa508cf10f9f304a20"] .list-item-content__button-wrapper button {
+  width: 150px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+
+@media screen and (max-width: 600px) {
+  section[data-section-id="6aa953aa508cf10f9f304a20"] .user-items-list-carousel {
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+  }
+  section[data-section-id="6aa953aa508cf10f9f304a20"] .user-items-list-carousel__slides {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+  }
+  section[data-section-id="6aa953aa508cf10f9f304a20"] .user-items-list-carousel__slide {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 auto !important;
+    margin-bottom: 24px !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  section[data-section-id="6aa953aa508cf10f9f304a20"] [aria-label*="Previous" i],
+  section[data-section-id="6aa953aa508cf10f9f304a20"] [aria-label*="Next" i],
+  section[data-section-id="6aa953aa508cf10f9f304a20"] [class*="arrow"],
+  section[data-section-id="6aa953aa508cf10f9f304a20"] [class*="pagination"] {
+    display: none !important;
+  }
+}
