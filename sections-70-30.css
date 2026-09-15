@@ -291,3 +291,34 @@ section[data-section-id="6aa948913de94233f7da3128"] .list-item-content__button-w
     display: none !important;
   }
 }
+
+/* ============================================================
+   70/30 split for the NEW page — different section IDs since
+   this is a fresh page, not the original Events page pairing.
+   70% = 6aa951b7a1a46e6539a354ee, 30% = 6aa951a81a1dc054924734cd
+   ============================================================ */
+section.region:has(section[data-section-id="6aa951b7a1a46e6539a354ee"]):has(section[data-section-id="6aa951a81a1dc054924734cd"]),
+#siteWrapper .sections:has(section[data-section-id="6aa951b7a1a46e6539a354ee"]):has(section[data-section-id="6aa951a81a1dc054924734cd"]) {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+section[data-section-id="6aa951b7a1a46e6539a354ee"] {
+  width: 70% !important;
+  flex: 0 0 70% !important;
+  box-sizing: border-box !important;
+}
+
+section[data-section-id="6aa951a81a1dc054924734cd"] {
+  width: 30% !important;
+  flex: 0 0 30% !important;
+  box-sizing: border-box !important;
+}
+
+@media screen and (max-width: 800px) {
+  section[data-section-id="6aa951b7a1a46e6539a354ee"],
+  section[data-section-id="6aa951a81a1dc054924734cd"] {
+    width: 50% !important;
+    flex: 0 0 50% !important;
+  }
+}
