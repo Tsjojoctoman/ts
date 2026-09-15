@@ -15,3 +15,18 @@ body:not(.sqs-edit-mode-active) [data-section-theme="dark"],
 body:not(.sqs-edit-mode-active) [data-section-theme="dark"] * {
   cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAJ0lEQVR4nO3NMQEAAAjDMMC/52ECvlRA00lSj83nHAAAAAAAAOCuBRctBCzRpB8qAAAAAElFTkSuQmCC') 12 12, auto !important;
 }
+
+/* Same white-square cursor over summary/list item images */
+body:not(.sqs-edit-mode-active) .summary-item img,
+body:not(.sqs-edit-mode-active) .summary-item img *,
+body:not(.sqs-edit-mode-active) .list-item img,
+body:not(.sqs-edit-mode-active) .list-item img * {
+  cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAJ0lEQVR4nO3NMQEAAAjDMMC/56ECvlRA00lSj83nHAAAAAAAAOCuBRctBCzRpB8qAAAAAElFTkSuQmCC') 12 12, auto !important;
+}
+
+/* Over red (#E60F19) arrow buttons (Events + Blogs card carousels),
+   swap to white so it stays visible against the same red. */
+body:not(.sqs-edit-mode-active) button[class*="__arrow-button"],
+body:not(.sqs-edit-mode-active) button[class*="__arrow-button"] * {
+  cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAJ0lEQVR4nO3NMQEAAAjDMMC/56ECvlRA00lSj83nHAAAAAAAAOCuBRctBCzRpB8qAAAAAElFTkSuQmCC') 12 12, auto !important;
+}
