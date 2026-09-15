@@ -89,7 +89,7 @@ section[data-section-id="6aa80c05866d1f24313a8193"] .list-item-content__button-w
   right: 0 !important;
   bottom: 0 !important;
   display: flex !important;
-  justify-content: center !important;
+  justify-content: flex-start !important;
   width: auto !important;
   margin: 0 !important;
 }
@@ -101,6 +101,20 @@ section[data-section-id="6aa80c05866d1f24313a8193"] .list-item-content__button-w
   justify-content: center !important;
   margin: 0 !important;
   border-radius: 0 !important;
+}
+
+/* Real horizontal position comes from .list-item-content__button-container
+   (a wrapper we discovered via Inspect on section 6aa953aa508cf10f9f304a20)
+   — a native Squarespace rule scoped to
+   .user-items-list-carousel[data-button-placement="center"] sets
+   margin-left/right:auto on it, which is what actually centers the
+   button regardless of the .button-wrapper's own justify-content. */
+section[data-section-id="6aa80c05866d1f24313a8193"] .list-item-content__button-container {
+  display: flex !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
 /* --- Mobile only (phones, not tablets/desktop): turn the card
