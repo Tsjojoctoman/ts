@@ -49,12 +49,20 @@ section[data-section-id="6a9ecb4b616f885259306a1c"] .fluid-engine {
 }
 
 /* --- Align "READ" buttons to the bottom of each card regardless of
-   description length, in the card/list section --- */
-section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__gutter > * {
-  display: flex !important;
-  flex-direction: column !important;
-  height: 100% !important;
+   description length, in the card/list section. Uses absolute
+   positioning (pinned to the card's bottom edge) instead of flexbox
+   margin-top:auto, since the percentage-height chain through
+   .list-item-content wasn't resolving reliably. Confirmed real class
+   names via Inspect: .user-items-list-carousel__slide (card),
+   .list-item-content__button-wrapper (button). Adjust padding-bottom
+   to match the actual button height if it overlaps the description. */
+section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__slide {
+  position: relative !important;
+  padding-bottom: 80px !important;
 }
-section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__gutter > * > *:last-child {
-  margin-top: auto !important;
+section[data-section-id="6aa80c05866d1f24313a8193"] .list-item-content__button-wrapper {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
 }
