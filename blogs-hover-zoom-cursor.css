@@ -1,0 +1,42 @@
+/* ============================================================
+   Blogs list ("6aa80c05866d1f24313a8193") — hover effects:
+   1. Image zooms slightly on hover, clipped to its own box (no
+      overflow outside the card). Uses a wildcard class selector
+      ([class*="list-item-content__media"]) since the exact image
+      wrapper class hasn't been confirmed via Inspect yet - if the
+      zoom doesn't show up, Inspect the image and send a screenshot
+      so the selector can be corrected.
+   2. "WELL READ" floating cursor label - see the matching <script>
+      in blogs-hover-zoom-cursor.html (Code Injection > Header).
+   ============================================================ */
+body:not(.sqs-edit-mode-active) section[data-section-id="6aa80c05866d1f24313a8193"] [class*="list-item-content__media"] {
+  overflow: hidden !important;
+}
+body:not(.sqs-edit-mode-active) section[data-section-id="6aa80c05866d1f24313a8193"] [class*="list-item-content__media"] img {
+  transition: transform 0.4s ease !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  body:not(.sqs-edit-mode-active) section[data-section-id="6aa80c05866d1f24313a8193"] [class*="list-item-content__media"]:hover img {
+    transform: scale(1.1) !important;
+  }
+}
+
+/* Floating "WELL READ" cursor label, positioned by the script */
+#well-read-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+  background: #E60F19;
+  color: #fff;
+  padding: 10px 18px;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  border-radius: 999px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 9999;
+  white-space: nowrap;
+}

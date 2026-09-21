@@ -1,0 +1,29 @@
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (document.body.classList.contains('sqs-edit-mode-active')) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  var section = document.querySelector('section[data-section-id="6aa80c05866d1f24313a8193"]');
+  if (!section) return;
+
+  var label = document.createElement('div');
+  label.id = 'well-read-cursor';
+  label.textContent = 'WELL READ';
+  document.body.appendChild(label);
+
+  section.addEventListener('mousemove', function (e) {
+    var mediaEl = e.target.closest('[class*="list-item-content__media"]');
+    if (mediaEl) {
+      label.style.opacity = '1';
+      label.style.left = e.clientX + 'px';
+      label.style.top = e.clientY + 'px';
+    } else {
+      label.style.opacity = '0';
+    }
+  });
+
+  section.addEventListener('mouseleave', function () {
+    label.style.opacity = '0';
+  });
+});
+</script>
