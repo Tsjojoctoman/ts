@@ -1,0 +1,54 @@
+/* ============================================================
+   About Us page — scroll-jacking horizontal panels, take 2, for
+   two same-height sections. Works together with the wrapping
+   <script> in about-us-scroll-jack.html (paste that in Code
+   Injection > Header, this file in Custom CSS).
+
+   Scoped with body:not(.sqs-edit-mode-active) so none of this
+   applies while in the Squarespace editor.
+
+   DESKTOP ONLY (min-width: 801px) — scroll-jacking behaves
+   unreliably on phones (mobile browser chrome changes the real
+   viewport height while scrolling), so below 801px the sections
+   just render and stack normally. The JS also skips wrapping them
+   on small screens, see about-us-scroll-jack.html.
+
+   Because both sections are the same height now, there's no need
+   for the overflow-y:auto + hide-the-scrollbar workaround from
+   the first attempt — overflow-y:hidden alone is enough as a
+   safety clip and never shows a scrollbar.
+   ============================================================ */
+@media screen and (min-width: 801px) {
+  body:not(.sqs-edit-mode-active) #hscroll-pin-outer {
+    position: relative;
+    height: 200vh;
+  }
+  body:not(.sqs-edit-mode-active) #hscroll-pin-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+  body:not(.sqs-edit-mode-active) #hscroll-track {
+    display: flex;
+    height: 100%;
+    width: 200vw;
+    will-change: transform;
+  }
+  body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464f"],
+  body:not(.sqs-edit-mode-active) section[data-section-id="6ab117879e98ff097bf014ba"] {
+    width: 100vw !important;
+    height: 100vh !important;
+    flex: 0 0 100vw !important;
+    overflow-y: hidden !important;
+    box-sizing: border-box !important;
+  }
+  html {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+  body:not(.sqs-edit-mode-active) {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+}
