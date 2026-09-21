@@ -53,7 +53,15 @@ body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464
    browser window, showing an unwanted horizontal scrollbar on the
    whole page. Block sideways page scroll entirely — the effect's
    horizontal movement happens via the transform inside the clipped
-   sticky container, never by the page itself scrolling sideways. */
+   sticky container, never by the page itself scrolling sideways.
+   Both html AND body need this — in most browsers html, not body,
+   is the element that actually owns the page's scrollbar, so
+   overflow-x:hidden on body alone does nothing. */
+html {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
 body:not(.sqs-edit-mode-active) {
   overflow-x: hidden !important;
+  max-width: 100vw !important;
 }
