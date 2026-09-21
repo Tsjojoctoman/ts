@@ -2,7 +2,6 @@
 document.addEventListener('DOMContentLoaded', function () {
   if (document.body.classList.contains('sqs-edit-mode-active')) return;
   if (window.innerWidth <= 600) return;
-  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
   var sec1 = document.querySelector('section[data-section-id="6a7b1a77240b942222f5464f"]');
   var sec2 = document.querySelector('section[data-section-id="6ab117879e98ff097bf014ba"]');
@@ -32,23 +31,23 @@ document.addEventListener('DOMContentLoaded', function () {
     inner.style.transform = 'translateX(-' + (progress * maxScroll) + 'px)';
   }
 
-  window.addEventListener('wheel', function (e) {
+  function handleDelta(deltaY, preventDefault) {
     var rect = box.getBoundingClientRect();
     var visible = rect.top < window.innerHeight && rect.bottom > 0;
     if (!visible) {
       released = null;
-      return;
+      return false;
     }
 
-    var scrollingForward = e.deltaY > 0;
+    var scrollingForward = deltaY > 0;
 
     if (released === 'forward' && scrollingForward) {
-      e.preventDefault();
-      return;
+      preventDefault();
+      return true;
     }
     if (released === 'back' && !scrollingForward) {
-      e.preventDefault();
-      return;
+      preventDefault();
+      return true;
     }
     if (released) released = null;
 
@@ -56,22 +55,46 @@ document.addEventListener('DOMContentLoaded', function () {
     var atStart = progress <= 0;
     if ((scrollingForward && atEnd) || (!scrollingForward && atStart)) {
       released = scrollingForward ? 'forward' : 'back';
-      e.preventDefault();
+      preventDefault();
       if (scrollingForward) {
         window.scrollTo({ top: window.scrollY + rect.bottom, behavior: 'smooth' });
       } else {
         window.scrollTo({ top: window.scrollY + rect.top - window.innerHeight, behavior: 'smooth' });
       }
-      return;
+      return true;
     }
 
-    e.preventDefault();
+    preventDefault();
     window.scrollTo(0, window.scrollY + rect.top);
     if (maxScroll > 0) {
-      progress += e.deltaY / maxScroll;
+      progress += deltaY / maxScroll;
       progress = Math.min(Math.max(progress, 0), 1);
       render();
     }
+    return true;
+  }
+
+  window.addEventListener('wheel', function (e) {
+    handleDelta(e.deltaY, function () { e.preventDefault(); });
   }, { passive: false });
+
+  var touchY = null;
+  window.addEventListener('touchstart', function (e) {
+    touchY = e.touches[0].clientY;
+  }, { passive: true });
+
+  window.addEventListener('touchmove', function (e) {
+    if (touchY === null) return;
+    var currentY = e.touches[0].clientY;
+    var deltaY = touchY - currentY;
+    var handled = handleDelta(deltaY, function () { e.preventDefault(); });
+    if (handled) {
+      touchY = currentY;
+    }
+  }, { passive: false });
+
+  window.addEventListener('touchend', function () {
+    touchY = null;
+  }, { passive: true });
 });
 </script>
