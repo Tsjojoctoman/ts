@@ -31,19 +31,22 @@ document.addEventListener('DOMContentLoaded', function () {
     inner.style.transform = 'translateX(-' + (progress * maxScroll) + 'px)';
   }
 
+  var releaseMargin = 30;
+
   window.addEventListener('wheel', function (e) {
     var rect = box.getBoundingClientRect();
-    var visible = rect.top < window.innerHeight && rect.bottom > 0;
-    if (!visible) {
-      released = null;
-      return;
-    }
-
     var scrollingForward = e.deltaY > 0;
 
-    if (released === 'forward' && scrollingForward) return;
-    if (released === 'back' && !scrollingForward) return;
-    if (released) released = null;
+    if (released === 'forward') {
+      if (rect.bottom > -releaseMargin) return;
+      released = null;
+    } else if (released === 'back') {
+      if (rect.top < window.innerHeight + releaseMargin) return;
+      released = null;
+    }
+
+    var visible = rect.top < window.innerHeight && rect.bottom > 0;
+    if (!visible) return;
 
     var atEnd = progress >= 1;
     var atStart = progress <= 0;
