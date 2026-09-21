@@ -29,4 +29,17 @@
     overflow-y: auto !important;
     box-sizing: border-box !important;
   }
+
+  /* Hide the internal scrollbar visually (safety net for content
+     taller than the box) while keeping the scrolling itself
+     working, cross-browser. */
+  body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464f"],
+  body:not(.sqs-edit-mode-active) section[data-section-id="6ab117879e98ff097bf014ba"] {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464f"]::-webkit-scrollbar,
+  body:not(.sqs-edit-mode-active) section[data-section-id="6ab117879e98ff097bf014ba"]::-webkit-scrollbar {
+    display: none !important;
+  }
 }

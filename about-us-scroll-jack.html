@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var progress = 0;
   var maxScroll = 0;
+  var released = null;
+
   function recalc() {
     maxScroll = inner.scrollWidth - box.clientWidth;
   }
@@ -29,14 +31,29 @@ document.addEventListener('DOMContentLoaded', function () {
     inner.style.transform = 'translateX(-' + (progress * maxScroll) + 'px)';
   }
 
-  box.addEventListener('wheel', function (e) {
+  window.addEventListener('wheel', function (e) {
+    var rect = box.getBoundingClientRect();
+    var visible = rect.top < window.innerHeight && rect.bottom > 0;
+    if (!visible) {
+      released = null;
+      return;
+    }
+
     var scrollingForward = e.deltaY > 0;
+
+    if (released === 'forward' && scrollingForward) return;
+    if (released === 'back' && !scrollingForward) return;
+    if (released) released = null;
+
     var atEnd = progress >= 1;
     var atStart = progress <= 0;
     if ((scrollingForward && atEnd) || (!scrollingForward && atStart)) {
+      released = scrollingForward ? 'forward' : 'back';
       return;
     }
+
     e.preventDefault();
+    window.scrollTo(0, window.scrollY + rect.top);
     if (maxScroll > 0) {
       progress += e.deltaY / maxScroll;
       progress = Math.min(Math.max(progress, 0), 1);
