@@ -51,9 +51,9 @@ document.addEventListener('DOMContentLoaded', function () {
       released = scrollingForward ? 'forward' : 'back';
       e.preventDefault();
       if (scrollingForward) {
-        window.scrollTo(0, window.scrollY + rect.bottom);
+        window.scrollTo({ top: window.scrollY + rect.bottom, behavior: 'smooth' });
       } else {
-        window.scrollTo(0, window.scrollY + rect.top - window.innerHeight);
+        window.scrollTo({ top: window.scrollY + rect.top - window.innerHeight, behavior: 'smooth' });
       }
       return;
     }
