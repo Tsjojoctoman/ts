@@ -115,6 +115,7 @@ section[data-section-id="6aa80c05866d1f24313a8193"] .list-item-content__button-c
   text-align: left !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
+  max-width: 100% !important;
 }
 
 /* --- Mobile only (phones, not tablets/desktop): turn the card
