@@ -4,12 +4,19 @@
    Different technique from the first attempt: no position:sticky,
    no forced 200vh page height. The box just sits in the normal
    page flow at 100vh tall, like any other section. JS intercepts
-   the mouse wheel only while hovering this specific box and moves
-   the two sections sideways; once you reach either end, normal
-   page scrolling continues past it. This avoids the sticky+reparent
-   combination that was conflicting with the site header.
+   the mouse wheel and moves the two sections sideways; once you
+   reach either end, normal page scrolling continues past it. This
+   avoids the sticky+reparent combination that was conflicting with
+   the site header.
+
+   Only active on devices with a real mouse/trackpad (hover: hover
+   and pointer: fine) AND wider than 600px. Width alone isn't
+   enough to exclude tablets like iPads, which are wider than
+   600px but touch-only - touch swiping never fires 'wheel' events,
+   so without the hover/pointer check the layout would still force
+   the sections to 50% width with no way to reveal them via touch.
    ============================================================ */
-@media screen and (min-width: 601px) {
+@media screen and (min-width: 601px) and (hover: hover) and (pointer: fine) {
   body:not(.sqs-edit-mode-active) #hscroll-box {
     width: 100%;
     height: 100vh;
