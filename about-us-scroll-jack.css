@@ -7,18 +7,21 @@
    Scoped with body:not(.sqs-edit-mode-active) so none of this
    applies while in the Squarespace editor.
 
-   DESKTOP ONLY (min-width: 801px) — scroll-jacking behaves
+   OFF ON PHONES ONLY (min-width: 601px) — scroll-jacking behaves
    unreliably on phones (mobile browser chrome changes the real
-   viewport height while scrolling), so below 801px the sections
-   just render and stack normally. The JS also skips wrapping them
-   on small screens, see about-us-scroll-jack.html.
+   viewport height while scrolling), so below 601px the sections
+   just render and stack normally. 601px is deliberately low so
+   it stays active on laptops (including narrower/scaled-down
+   laptop viewports), not just large desktop monitors. The JS
+   also skips wrapping the sections on small screens, see
+   about-us-scroll-jack.html.
 
    Because both sections are the same height now, there's no need
    for the overflow-y:auto + hide-the-scrollbar workaround from
    the first attempt — overflow-y:hidden alone is enough as a
    safety clip and never shows a scrollbar.
    ============================================================ */
-@media screen and (min-width: 801px) {
+@media screen and (min-width: 601px) {
   body:not(.sqs-edit-mode-active) #hscroll-pin-outer {
     position: relative;
     height: 200vh;
