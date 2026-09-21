@@ -3,25 +3,30 @@
    two sections ("About Manifesto" + "Our Story"). Works together
    with the wrapping <script> in about-us-scroll-jack.html (paste
    that in Code Injection > Header, this file in Custom CSS).
+
+   Everything is scoped with body:not(.sqs-edit-mode-active) so
+   none of this applies while you're in the Squarespace editor —
+   otherwise the 200vh pinned wrapper shows as a big grey blank
+   gap in the edit canvas below the sections.
    ============================================================ */
-#hscroll-pin-outer {
+body:not(.sqs-edit-mode-active) #hscroll-pin-outer {
   position: relative;
   height: 200vh;
 }
-#hscroll-pin-sticky {
+body:not(.sqs-edit-mode-active) #hscroll-pin-sticky {
   position: sticky;
   top: 0;
   height: 100vh;
   overflow: hidden;
 }
-#hscroll-track {
+body:not(.sqs-edit-mode-active) #hscroll-track {
   display: flex;
   height: 100%;
   width: 200vw;
   will-change: transform;
 }
-section[data-section-id="6a7b244aa4a64a74738e5712"],
-section[data-section-id="6a7b1a77240b942222f5464f"] {
+body:not(.sqs-edit-mode-active) section[data-section-id="6a7b244aa4a64a74738e5712"],
+body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464f"] {
   width: 100vw !important;
   height: 100vh !important;
   flex: 0 0 100vw !important;
@@ -34,12 +39,12 @@ section[data-section-id="6a7b1a77240b942222f5464f"] {
    it inside the panel — but that shows a scrollbar. Hide the
    scrollbar visually while keeping the scrolling itself working,
    cross-browser. Applied to both panels for consistency. */
-section[data-section-id="6a7b244aa4a64a74738e5712"],
-section[data-section-id="6a7b1a77240b942222f5464f"] {
+body:not(.sqs-edit-mode-active) section[data-section-id="6a7b244aa4a64a74738e5712"],
+body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464f"] {
   scrollbar-width: none !important; /* Firefox */
   -ms-overflow-style: none !important; /* old Edge/IE */
 }
-section[data-section-id="6a7b244aa4a64a74738e5712"]::-webkit-scrollbar,
-section[data-section-id="6a7b1a77240b942222f5464f"]::-webkit-scrollbar {
+body:not(.sqs-edit-mode-active) section[data-section-id="6a7b244aa4a64a74738e5712"]::-webkit-scrollbar,
+body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464f"]::-webkit-scrollbar {
   display: none !important; /* Chrome/Safari */
 }
