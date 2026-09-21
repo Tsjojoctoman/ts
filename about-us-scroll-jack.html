@@ -41,8 +41,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var scrollingForward = e.deltaY > 0;
 
-    if (released === 'forward' && scrollingForward) return;
-    if (released === 'back' && !scrollingForward) return;
+    if (released === 'forward' && scrollingForward) {
+      e.preventDefault();
+      return;
+    }
+    if (released === 'back' && !scrollingForward) {
+      e.preventDefault();
+      return;
+    }
     if (released) released = null;
 
     var atEnd = progress >= 1;
