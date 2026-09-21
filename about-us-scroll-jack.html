@@ -7,38 +7,41 @@ document.addEventListener('DOMContentLoaded', function () {
   var sec2 = document.querySelector('section[data-section-id="6ab117879e98ff097bf014ba"]');
   if (!sec1 || !sec2) return;
 
-  var pinOuter = document.createElement('div');
-  pinOuter.id = 'hscroll-pin-outer';
-  var pinSticky = document.createElement('div');
-  pinSticky.id = 'hscroll-pin-sticky';
-  var track = document.createElement('div');
-  track.id = 'hscroll-track';
+  var box = document.createElement('div');
+  box.id = 'hscroll-box';
+  var inner = document.createElement('div');
+  inner.id = 'hscroll-inner';
 
-  sec1.parentNode.insertBefore(pinOuter, sec1);
-  pinOuter.appendChild(pinSticky);
-  pinSticky.appendChild(track);
-  track.appendChild(sec1);
-  track.appendChild(sec2);
+  sec1.parentNode.insertBefore(box, sec1);
+  box.appendChild(inner);
+  inner.appendChild(sec1);
+  inner.appendChild(sec2);
 
-  var ticking = false;
-  function updateScroll() {
-    var rect = pinOuter.getBoundingClientRect();
-    var scrollableDistance = pinOuter.offsetHeight - window.innerHeight;
-    var progress = scrollableDistance > 0
-      ? Math.min(Math.max(-rect.top / scrollableDistance, 0), 1)
-      : 0;
-    var trackWidth = track.scrollWidth - window.innerWidth;
-    track.style.transform = 'translateX(-' + (progress * trackWidth) + 'px)';
-    ticking = false;
+  var progress = 0;
+  var maxScroll = 0;
+  function recalc() {
+    maxScroll = inner.scrollWidth - box.clientWidth;
   }
-  function onScroll() {
-    if (!ticking) {
-      requestAnimationFrame(updateScroll);
-      ticking = true;
+  recalc();
+  window.addEventListener('resize', recalc);
+
+  function render() {
+    inner.style.transform = 'translateX(-' + (progress * maxScroll) + 'px)';
+  }
+
+  box.addEventListener('wheel', function (e) {
+    var scrollingForward = e.deltaY > 0;
+    var atEnd = progress >= 1;
+    var atStart = progress <= 0;
+    if ((scrollingForward && atEnd) || (!scrollingForward && atStart)) {
+      return;
     }
-  }
-  window.addEventListener('scroll', onScroll);
-  window.addEventListener('resize', onScroll);
-  updateScroll();
+    e.preventDefault();
+    if (maxScroll > 0) {
+      progress += e.deltaY / maxScroll;
+      progress = Math.min(Math.max(progress, 0), 1);
+      render();
+    }
+  }, { passive: false });
 });
 </script>

@@ -1,71 +1,32 @@
 /* ============================================================
-   About Us page — scroll-jacking horizontal panels, final version.
-   Sections: "Our Story" (6a7b1a77240b942222f5464f) + the new
-   section (6ab117879e98ff097bf014ba), confirmed via Inspect.
-   Works together with the <script> in about-us-scroll-jack.html
-   (paste that in Code Injection > Header, this file in Custom CSS).
+   About Us page — horizontal wheel-scroll box (rewrite #2).
 
-   Scoped with body:not(.sqs-edit-mode-active) so none of this
-   applies in the Squarespace editor.
-
-   OFF ON PHONES ONLY (min-width: 601px) — scroll-jacking behaves
-   unreliably on phones, so below 601px the sections render and
-   stack normally. 601px is deliberately low so it stays active on
-   laptops, not just large desktop monitors. The JS also skips
-   wrapping the sections on small screens.
-
-   Keeps the overflow-y:auto + hidden-scrollbar safety net (the
-   version confirmed working, in case the two sections aren't
-   pixel-perfect equal height), plus the overflow-x:hidden fix for
-   the stray horizontal scrollbar ("grey area") that version had.
+   Different technique from the first attempt: no position:sticky,
+   no forced 200vh page height. The box just sits in the normal
+   page flow at 100vh tall, like any other section. JS intercepts
+   the mouse wheel only while hovering this specific box and moves
+   the two sections sideways; once you reach either end, normal
+   page scrolling continues past it. This avoids the sticky+reparent
+   combination that was conflicting with the site header.
    ============================================================ */
 @media screen and (min-width: 601px) {
-  body:not(.sqs-edit-mode-active) #hscroll-pin-outer {
-    position: relative;
-    height: 200vh;
-  }
-  body:not(.sqs-edit-mode-active) #hscroll-pin-sticky {
-    position: sticky;
-    top: 0;
+  body:not(.sqs-edit-mode-active) #hscroll-box {
+    width: 100%;
     height: 100vh;
     overflow: hidden;
+    position: relative;
   }
-  body:not(.sqs-edit-mode-active) #hscroll-track {
+  body:not(.sqs-edit-mode-active) #hscroll-inner {
     display: flex;
     height: 100%;
-    width: 200vw;
-    will-change: transform;
+    width: 200%;
   }
   body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464f"],
   body:not(.sqs-edit-mode-active) section[data-section-id="6ab117879e98ff097bf014ba"] {
-    width: 100vw !important;
-    height: 100vh !important;
-    flex: 0 0 100vw !important;
+    width: 50% !important;
+    height: 100% !important;
+    flex: 0 0 50% !important;
     overflow-y: auto !important;
     box-sizing: border-box !important;
-  }
-
-  /* Hide the internal scrollbar visually while keeping the
-     scrolling itself working, in case content overflows 100vh. */
-  body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464f"],
-  body:not(.sqs-edit-mode-active) section[data-section-id="6ab117879e98ff097bf014ba"] {
-    scrollbar-width: none !important; /* Firefox */
-    -ms-overflow-style: none !important; /* old Edge/IE */
-  }
-  body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464f"]::-webkit-scrollbar,
-  body:not(.sqs-edit-mode-active) section[data-section-id="6ab117879e98ff097bf014ba"]::-webkit-scrollbar {
-    display: none !important; /* Chrome/Safari */
-  }
-
-  /* Block sideways page scroll (the "grey area" scrollbar) —
-     both html AND body need this, since html (not body) usually
-     owns the page's actual horizontal scrollbar. */
-  html {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
-  }
-  body:not(.sqs-edit-mode-active) {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
   }
 }
