@@ -1,27 +1,24 @@
 /* ============================================================
    Blogs list ("6aa80c05866d1f24313a8193") — hover effects:
    1. Image zooms slightly on hover, clipped to its own box (no
-      overflow outside the card). Uses a wildcard class selector
-      ([class*="list-item-content__media"]) since the exact image
-      wrapper class hasn't been confirmed via Inspect yet - if the
-      zoom doesn't show up, Inspect the image and send a screenshot
-      so the selector can be corrected.
-   2. "WELL READ" floating cursor label - see the matching <script>
+      overflow outside the card). Confirmed real classes via
+      Inspect: .user-items-list-carousel__media-container (box),
+      .user-items-list-carousel__media-inner (already has native
+      overflow:hidden - no need to add it ourselves),
+      .user-items-list-carousel__media (the <img> itself).
+   2. "READ" floating cursor label - see the matching <script>
       in blogs-hover-zoom-cursor.html (Code Injection > Header).
    ============================================================ */
-body:not(.sqs-edit-mode-active) section[data-section-id="6aa80c05866d1f24313a8193"] [class*="list-item-content__media"] {
-  overflow: hidden !important;
-}
-body:not(.sqs-edit-mode-active) section[data-section-id="6aa80c05866d1f24313a8193"] [class*="list-item-content__media"] img {
+body:not(.sqs-edit-mode-active) section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__media {
   transition: transform 0.4s ease !important;
 }
 @media (hover: hover) and (pointer: fine) {
-  body:not(.sqs-edit-mode-active) section[data-section-id="6aa80c05866d1f24313a8193"] [class*="list-item-content__media"]:hover img {
+  body:not(.sqs-edit-mode-active) section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__media-inner:hover .user-items-list-carousel__media {
     transform: scale(1.1) !important;
   }
 }
 
-/* Floating "WELL READ" cursor label, positioned by the script */
+/* Floating "READ" cursor label, positioned by the script */
 #well-read-cursor {
   position: fixed;
   top: 0;

@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.body.appendChild(label);
 
   section.addEventListener('mousemove', function (e) {
-    var mediaEl = e.target.closest('[class*="list-item-content__media"]');
+    var mediaEl = e.target.closest('.user-items-list-carousel__media-container');
     if (mediaEl) {
       label.style.opacity = '1';
       label.style.left = e.clientX + 'px';
