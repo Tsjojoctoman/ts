@@ -49,6 +49,12 @@ document.addEventListener('DOMContentLoaded', function () {
     var atStart = progress <= 0;
     if ((scrollingForward && atEnd) || (!scrollingForward && atStart)) {
       released = scrollingForward ? 'forward' : 'back';
+      e.preventDefault();
+      if (scrollingForward) {
+        window.scrollTo(0, window.scrollY + rect.bottom);
+      } else {
+        window.scrollTo(0, window.scrollY + rect.top - window.innerHeight);
+      }
       return;
     }
 
