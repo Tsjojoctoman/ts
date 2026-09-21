@@ -13,7 +13,7 @@ body:not(.sqs-edit-mode-active) section[data-section-id="6aa80c05866d1f24313a819
   transition: transform 0.4s ease !important;
 }
 @media (hover: hover) and (pointer: fine) {
-  body:not(.sqs-edit-mode-active) section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__media-inner:hover .user-items-list-carousel__media {
+  body:not(.sqs-edit-mode-active) section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__slide:hover .user-items-list-carousel__media {
     transform: scale(1.1) !important;
   }
 }
