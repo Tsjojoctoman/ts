@@ -1,0 +1,41 @@
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var sec1 = document.querySelector('section[data-section-id="6a7b244aa4a64a74738e5712"]');
+  var sec2 = document.querySelector('section[data-section-id="6a7b1a77240b942222f5464f"]');
+  if (!sec1 || !sec2) return;
+
+  var pinOuter = document.createElement('div');
+  pinOuter.id = 'hscroll-pin-outer';
+  var pinSticky = document.createElement('div');
+  pinSticky.id = 'hscroll-pin-sticky';
+  var track = document.createElement('div');
+  track.id = 'hscroll-track';
+
+  sec1.parentNode.insertBefore(pinOuter, sec1);
+  pinOuter.appendChild(pinSticky);
+  pinSticky.appendChild(track);
+  track.appendChild(sec1);
+  track.appendChild(sec2);
+
+  var ticking = false;
+  function updateScroll() {
+    var rect = pinOuter.getBoundingClientRect();
+    var scrollableDistance = pinOuter.offsetHeight - window.innerHeight;
+    var progress = scrollableDistance > 0
+      ? Math.min(Math.max(-rect.top / scrollableDistance, 0), 1)
+      : 0;
+    var trackWidth = track.scrollWidth - window.innerWidth;
+    track.style.transform = 'translateX(-' + (progress * trackWidth) + 'px)';
+    ticking = false;
+  }
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(updateScroll);
+      ticking = true;
+    }
+  }
+  window.addEventListener('scroll', onScroll);
+  window.addEventListener('resize', onScroll);
+  updateScroll();
+});
+</script>
