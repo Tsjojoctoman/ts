@@ -48,3 +48,12 @@ body:not(.sqs-edit-mode-active) section[data-section-id="6a7b244aa4a64a74738e571
 body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464f"]::-webkit-scrollbar {
   display: none !important; /* Chrome/Safari */
 }
+
+/* The 200vw track can occasionally overflow past the edge of the
+   browser window, showing an unwanted horizontal scrollbar on the
+   whole page. Block sideways page scroll entirely — the effect's
+   horizontal movement happens via the transform inside the clipped
+   sticky container, never by the page itself scrolling sideways. */
+body:not(.sqs-edit-mode-active) {
+  overflow-x: hidden !important;
+}
