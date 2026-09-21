@@ -431,3 +431,20 @@ section[data-section-id="6aa953aa508cf10f9f304a20"] .list-item-content__button-c
   margin-right: 0 !important;
   max-width: 100% !important;
 }
+
+/* ============================================================
+   "Our Allies" logo row — convert Fluid Engine grid (each logo
+   individually positioned) into a single horizontally scrollable
+   row, swipeable on mobile and scrollable on desktop.
+   ============================================================ */
+section[data-section-id="6ab100d0c2dfa821b6d6ba33"] .fluid-engine {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+section[data-section-id="6ab100d0c2dfa821b6d6ba33"] .fluid-engine > * {
+  position: relative !important;
+  flex: 0 0 auto !important;
+  width: 150px !important;
+}
