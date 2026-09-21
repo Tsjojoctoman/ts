@@ -18,6 +18,14 @@ body:not(.sqs-edit-mode-active) section[data-section-id="6aa80c05866d1f24313a819
   }
 }
 
+/* Hide the site-wide custom cursor (red/white square from
+   custom-cursor.css) over the image area specifically, so it
+   doesn't overlap/hide the "READ" label. */
+body:not(.sqs-edit-mode-active) section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__media-container,
+body:not(.sqs-edit-mode-active) section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__media-container * {
+  cursor: none !important;
+}
+
 /* Floating "READ" cursor label, positioned by the script */
 #well-read-cursor {
   position: fixed;
