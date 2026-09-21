@@ -148,6 +148,14 @@ section[data-section-id="6aa80c05866d1f24313a8193"] .list-item-content__button-c
   section[data-section-id="6aa80c05866d1f24313a8193"] [class*="pagination"] {
     display: none !important;
   }
+
+  /* Wider READ/READ MORE button on mobile specifically - adjust
+     this px value to taste, independent of the 400px desktop
+     width above. */
+  section[data-section-id="6aa80c05866d1f24313a8193"] .list-item-content__button-wrapper a,
+  section[data-section-id="6aa80c05866d1f24313a8193"] .list-item-content__button-wrapper button {
+    width: 300px !important;
+  }
 }
 
 /* ============================================================
