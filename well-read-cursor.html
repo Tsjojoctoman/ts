@@ -83,26 +83,25 @@ section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__m
       return null;
     }
 
-    // Uses the same bounding-box approach as imageUnderPoint(), rather
-    // than elementFromPoint(), because elementFromPoint() depends on the
-    // overlay's pointer-events being active — which is unreliable mid-
-    // animation while the nav is opening/closing (e.g. navigating back
-    // from a blog post), causing READ to flash through briefly. Checking
-    // the overlay's own rect instead doesn't depend on that timing.
-    function isNavOpen(x, y) {
+    // The overlay's own box is always full-height but only as wide as
+    // its text content (confirmed via DevTools), so checking cursor
+    // position against its rect doesn't work — most of the visually red
+    // screen isn't actually inside that narrow box. What actually
+    // toggles open vs. closed is visibility/opacity (confirmed: open ==
+    // visibility:visible + opacity:1, closed == visibility:hidden +
+    // opacity:0), so check that directly instead of any geometry.
+    function isNavOpen() {
       var overlay = document.querySelector('.header-menu, [data-test="header-menu"]');
       if (!overlay) return false;
 
-      var r = overlay.getBoundingClientRect();
-      if (r.width === 0 || r.height === 0) return false;
-
-      return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+      var s = getComputedStyle(overlay);
+      return s.visibility !== 'hidden' && s.opacity !== '0';
     }
 
     var currentHovered = null;
 
     document.addEventListener('mousemove', function (e) {
-      var hovered = isNavOpen(e.clientX, e.clientY) ? null : imageUnderPoint(e.clientX, e.clientY);
+      var hovered = isNavOpen() ? null : imageUnderPoint(e.clientX, e.clientY);
 
       if (hovered !== currentHovered) {
         if (currentHovered) currentHovered.classList.remove('well-read-image-hover');
