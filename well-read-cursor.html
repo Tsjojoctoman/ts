@@ -30,6 +30,21 @@ body.well-read-hover:not(.sqs-edit-mode-active),
 body.well-read-hover:not(.sqs-edit-mode-active) * {
   cursor: none !important;
 }
+
+/* Zooms the photo itself inside its fixed-size frame on hover — the
+   card/box never resizes, only the image content scales and crops
+   tighter, clipped by the frame's own overflow:hidden. */
+section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__media-inner {
+  overflow: hidden;
+}
+
+section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__media {
+  transition: transform 0.4s ease;
+}
+
+section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__media-container.well-read-image-hover .user-items-list-carousel__media {
+  transform: scale(1.08);
+}
 </style>
 
 <script>
@@ -68,11 +83,19 @@ body.well-read-hover:not(.sqs-edit-mode-active) * {
       return null;
     }
 
-    document.addEventListener('mousemove', function (e) {
-      var overImage = !!imageUnderPoint(e.clientX, e.clientY);
+    var currentHovered = null;
 
-      document.body.classList.toggle('well-read-hover', overImage);
-      label.style.opacity = overImage ? '1' : '0';
+    document.addEventListener('mousemove', function (e) {
+      var hovered = imageUnderPoint(e.clientX, e.clientY);
+
+      if (hovered !== currentHovered) {
+        if (currentHovered) currentHovered.classList.remove('well-read-image-hover');
+        if (hovered) hovered.classList.add('well-read-image-hover');
+        currentHovered = hovered;
+      }
+
+      document.body.classList.toggle('well-read-hover', !!hovered);
+      label.style.opacity = hovered ? '1' : '0';
       label.style.left = e.clientX + 'px';
       label.style.top = e.clientY + 'px';
     });
