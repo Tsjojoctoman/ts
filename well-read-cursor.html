@@ -83,10 +83,20 @@ section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__m
       return null;
     }
 
+    // The bounding-box check above only knows where things sit in the
+    // page's normal layout — it has no idea the fullscreen nav overlay
+    // (.header-menu) might currently be covering that same spot. So
+    // before trusting a bounding-box match, confirm nothing else (like
+    // the open nav) is actually painted on top of the cursor there.
+    function isNavOpen(x, y) {
+      var topElement = document.elementFromPoint(x, y);
+      return !!(topElement && topElement.closest('.header-menu'));
+    }
+
     var currentHovered = null;
 
     document.addEventListener('mousemove', function (e) {
-      var hovered = imageUnderPoint(e.clientX, e.clientY);
+      var hovered = isNavOpen(e.clientX, e.clientY) ? null : imageUnderPoint(e.clientX, e.clientY);
 
       if (hovered !== currentHovered) {
         if (currentHovered) currentHovered.classList.remove('well-read-image-hover');
