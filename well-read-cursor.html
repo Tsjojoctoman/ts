@@ -83,14 +83,20 @@ section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__m
       return null;
     }
 
-    // The bounding-box check above only knows where things sit in the
-    // page's normal layout — it has no idea the fullscreen nav overlay
-    // (.header-menu) might currently be covering that same spot. So
-    // before trusting a bounding-box match, confirm nothing else (like
-    // the open nav) is actually painted on top of the cursor there.
+    // Uses the same bounding-box approach as imageUnderPoint(), rather
+    // than elementFromPoint(), because elementFromPoint() depends on the
+    // overlay's pointer-events being active — which is unreliable mid-
+    // animation while the nav is opening/closing (e.g. navigating back
+    // from a blog post), causing READ to flash through briefly. Checking
+    // the overlay's own rect instead doesn't depend on that timing.
     function isNavOpen(x, y) {
-      var topElement = document.elementFromPoint(x, y);
-      return !!(topElement && topElement.closest('.header-menu'));
+      var overlay = document.querySelector('.header-menu, [data-test="header-menu"]');
+      if (!overlay) return false;
+
+      var r = overlay.getBoundingClientRect();
+      if (r.width === 0 || r.height === 0) return false;
+
+      return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
     }
 
     var currentHovered = null;
