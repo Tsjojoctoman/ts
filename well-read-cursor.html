@@ -22,6 +22,15 @@
   transition: opacity 0.15s ease;
 }
 
+/* Forces an instant hide (skips the fade transition above) specifically
+   while the nav is open, so a label that was mid-fade-out from a real
+   image hover a moment earlier doesn't visibly linger as the nav opens
+   on top of it. */
+#well-read-label.well-read-force-hidden {
+  opacity: 0 !important;
+  transition: none !important;
+}
+
 /* Hides the site-wide square cursor (custom-cursor.css) while the mouse
    is over a blog list image, so only the READ label shows. Matched
    specificity to custom-cursor.css's rules plus one extra class, so it
@@ -101,7 +110,8 @@ section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__m
     var currentHovered = null;
 
     document.addEventListener('mousemove', function (e) {
-      var hovered = isNavOpen() ? null : imageUnderPoint(e.clientX, e.clientY);
+      var navOpen = isNavOpen();
+      var hovered = navOpen ? null : imageUnderPoint(e.clientX, e.clientY);
 
       if (hovered !== currentHovered) {
         if (currentHovered) currentHovered.classList.remove('well-read-image-hover');
@@ -109,6 +119,7 @@ section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__m
         currentHovered = hovered;
       }
 
+      label.classList.toggle('well-read-force-hidden', navOpen);
       document.body.classList.toggle('well-read-hover', !!hovered);
       label.style.opacity = hovered ? '1' : '0';
       label.style.left = e.clientX + 'px';
