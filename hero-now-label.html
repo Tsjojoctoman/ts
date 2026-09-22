@@ -1,0 +1,46 @@
+<!-- Paste this whole block into Settings > Advanced > Code Injection > FOOTER -->
+<!--
+  Adds a static "NOW" label to the homepage hero carousel
+  (data-section-id="6a92cde6bbed3c398a6038e1"). Rendered as an actual
+  <h1> so it automatically matches your site's real H1 font/size/weight
+  from Site Styles, colored red (#E60F19). It sits fixed in place at the
+  top-left of the section and does NOT change as the background images
+  cycle through the carousel.
+-->
+
+<style>
+section[data-section-id="6a92cde6bbed3c398a6038e1"] {
+  position: relative;
+}
+
+#hero-now-label {
+  position: absolute;
+  top: 0;
+  left: var(--pagePadding, 24px);
+  margin: 0;
+  color: #E60F19;
+  z-index: 10;
+  pointer-events: none;
+}
+</style>
+
+<script>
+(function () {
+  function init() {
+    var section = document.querySelector('section[data-section-id="6a92cde6bbed3c398a6038e1"]');
+    if (!section) return;
+    if (document.getElementById('hero-now-label')) return;
+
+    var label = document.createElement('h1');
+    label.id = 'hero-now-label';
+    label.textContent = 'NOW';
+    section.appendChild(label);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
