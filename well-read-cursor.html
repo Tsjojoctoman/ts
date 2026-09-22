@@ -1,0 +1,60 @@
+<!-- Paste this whole block into Settings > Advanced > Code Injection > FOOTER -->
+
+<style>
+#well-read-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  background: #000;
+  color: #fff;
+  font-family: sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 8px 14px;
+  border-radius: 50%;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (document.body.classList.contains('sqs-edit-mode-active')) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  var label = document.createElement('div');
+  label.id = 'well-read-cursor';
+  label.textContent = 'READ';
+  document.body.appendChild(label);
+
+  // Look up the section fresh on every check instead of caching it once at
+  // DOMContentLoaded — Squarespace swaps page content in via AJAX on
+  // internal navigation without firing DOMContentLoaded again, so a
+  // one-time lookup would permanently disable this on any page where the
+  // section wasn't already in the DOM at initial load.
+  function isOverImage(x, y) {
+    var topElement = document.elementFromPoint(x, y);
+    if (!topElement) return false;
+
+    var container = topElement.closest('.user-items-list-carousel__media-container');
+    if (!container) return false;
+
+    return !!container.closest('section[data-section-id="6aa80c05866d1f24313a8193"]');
+  }
+
+  document.addEventListener('mousemove', function (e) {
+    if (isOverImage(e.clientX, e.clientY)) {
+      label.style.opacity = '1';
+      label.style.left = e.clientX + 'px';
+      label.style.top = e.clientY + 'px';
+    } else {
+      label.style.opacity = '0';
+    }
+  });
+});
+</script>
