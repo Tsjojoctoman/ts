@@ -125,6 +125,27 @@ section[data-section-id="6aa80c05866d1f24313a8193"] .user-items-list-carousel__m
       label.style.left = e.clientX + 'px';
       label.style.top = e.clientY + 'px';
     });
+
+    // Clicking the image navigates to whatever link the card's own
+    // button (e.g. "READ MORE") already points to, found by looking
+    // inside the same list item rather than hardcoding a URL — so it
+    // stays correct automatically as posts are added/edited.
+    document.addEventListener('click', function (e) {
+      if (isNavOpen()) return;
+
+      var container = imageUnderPoint(e.clientX, e.clientY);
+      if (!container) return;
+
+      var item = container.closest('li');
+      var link = item ? item.querySelector('a[href]') : null;
+      if (!link) return;
+
+      if (link.target === '_blank') {
+        window.open(link.href, '_blank');
+      } else {
+        window.location.href = link.href;
+      }
+    });
   }
 
   if (document.readyState === 'loading') {
