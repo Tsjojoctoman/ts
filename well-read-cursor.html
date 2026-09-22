@@ -46,18 +46,26 @@ body.well-read-hover:not(.sqs-edit-mode-active) * {
     label.textContent = 'READ';
     document.body.appendChild(label);
 
-    // Checked fresh on every mousemove (not cached) so this keeps working
-    // even if the section wasn't in the DOM yet when this script first ran
-    // (e.g. Squarespace's AJAX page transitions).
+    // Uses plain bounding-box math instead of document.elementFromPoint().
+    // The carousel's slide items go through an entrance/reveal animation
+    // (list-item-basic-animation) that leaves them with pointer-events:
+    // none, so elementFromPoint() never actually resolves to the image —
+    // it hits the <ul> wrapper instead. Checking whether the cursor
+    // coordinates fall inside each container's rect sidesteps that
+    // entirely. Queried fresh on every mousemove (not cached) so this
+    // keeps working across Squarespace's AJAX page transitions too.
     function imageUnderPoint(x, y) {
-      var topElement = document.elementFromPoint(x, y);
-      if (!topElement) return null;
+      var section = document.querySelector('section[data-section-id="6aa80c05866d1f24313a8193"]');
+      if (!section) return null;
 
-      var container = topElement.closest('.user-items-list-carousel__media-container');
-      if (!container) return null;
-
-      var section = container.closest('section[data-section-id="6aa80c05866d1f24313a8193"]');
-      return section ? container : null;
+      var containers = section.querySelectorAll('.user-items-list-carousel__media-container');
+      for (var i = 0; i < containers.length; i++) {
+        var r = containers[i].getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
+          return containers[i];
+        }
+      }
+      return null;
     }
 
     document.addEventListener('mousemove', function (e) {
