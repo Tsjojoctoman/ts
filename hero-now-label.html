@@ -15,7 +15,6 @@ section[data-section-id="6a92cde6bbed3c398a6038e1"] {
 
 #hero-now-label {
   position: absolute;
-  top: 0;
   left: var(--pagePadding, 24px);
   margin: 0;
   color: #E60F19;
@@ -35,6 +34,25 @@ section[data-section-id="6a92cde6bbed3c398a6038e1"] {
     label.id = 'hero-now-label';
     label.textContent = 'NOW';
     section.appendChild(label);
+
+    // The site's header is a "fixed header" style (floats over scrolling
+    // content, confirmed via the tweak-fixed-header body class), so it
+    // isn't part of normal document flow and the label needs its own
+    // top offset computed from the header's actual live height, rather
+    // than a hardcoded pixel value that would only be right at one
+    // screen width.
+    function positionBelowHeader() {
+      var header = document.getElementById('header');
+      var headerBottom = header ? header.getBoundingClientRect().bottom : 0;
+      var sectionTop = section.getBoundingClientRect().top;
+      // header.getBoundingClientRect() is viewport-relative, but the
+      // label's "top" is relative to its offsetParent (the section), so
+      // convert between the two coordinate spaces.
+      label.style.top = (headerBottom - sectionTop) + 'px';
+    }
+
+    positionBelowHeader();
+    window.addEventListener('resize', positionBelowHeader);
   }
 
   if (document.readyState === 'loading') {
