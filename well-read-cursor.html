@@ -1,7 +1,14 @@
 <!-- Paste this whole block into Settings > Advanced > Code Injection > FOOTER -->
+<!--
+  On the blog list section (data-section-id="6aa80c05866d1f24313a8193"),
+  hides your custom square cursor (defined in custom-cursor.css) and shows
+  plain white "READ" text following the mouse instead, but ONLY while the
+  mouse is exactly over a post's image (.user-items-list-carousel__media-
+  container), not the title/description/rest of the card.
+-->
 
 <style>
-#well-read-cursor {
+#well-read-label {
   position: fixed;
   top: 0;
   left: 0;
@@ -9,52 +16,65 @@
   z-index: 9999;
   pointer-events: none;
   opacity: 0;
-  background: #000;
-  color: #fff;
+  color: #ffffff;
   font-family: sans-serif;
-  font-size: 11px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.05em;
-  padding: 8px 14px;
-  border-radius: 50%;
-  transition: opacity 0.15s ease;
+  text-transform: uppercase;
   white-space: nowrap;
+  transition: opacity 0.15s ease;
+}
+
+/* Hides the site-wide square cursor (custom-cursor.css) while the mouse
+   is over a blog list image, so only the READ label shows. Matched
+   specificity to custom-cursor.css's rules plus one extra class, so it
+   wins the cascade. */
+body.well-read-hover:not(.sqs-edit-mode-active),
+body.well-read-hover:not(.sqs-edit-mode-active) * {
+  cursor: none !important;
 }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  if (document.body.classList.contains('sqs-edit-mode-active')) return;
-  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+(function () {
+  function init() {
+    if (document.body.classList.contains('sqs-edit-mode-active')) return;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
-  var label = document.createElement('div');
-  label.id = 'well-read-cursor';
-  label.textContent = 'READ';
-  document.body.appendChild(label);
+    var label = document.createElement('div');
+    label.id = 'well-read-label';
+    label.textContent = 'READ';
+    document.body.appendChild(label);
 
-  // Look up the section fresh on every check instead of caching it once at
-  // DOMContentLoaded — Squarespace swaps page content in via AJAX on
-  // internal navigation without firing DOMContentLoaded again, so a
-  // one-time lookup would permanently disable this on any page where the
-  // section wasn't already in the DOM at initial load.
-  function isOverImage(x, y) {
-    var topElement = document.elementFromPoint(x, y);
-    if (!topElement) return false;
+    // Checked fresh on every mousemove (not cached) so this keeps working
+    // even if the section wasn't in the DOM yet when this script first ran
+    // (e.g. Squarespace's AJAX page transitions).
+    function imageUnderPoint(x, y) {
+      var topElement = document.elementFromPoint(x, y);
+      if (!topElement) return null;
 
-    var container = topElement.closest('.user-items-list-carousel__media-container');
-    if (!container) return false;
+      var container = topElement.closest('.user-items-list-carousel__media-container');
+      if (!container) return null;
 
-    return !!container.closest('section[data-section-id="6aa80c05866d1f24313a8193"]');
-  }
+      var section = container.closest('section[data-section-id="6aa80c05866d1f24313a8193"]');
+      return section ? container : null;
+    }
 
-  document.addEventListener('mousemove', function (e) {
-    if (isOverImage(e.clientX, e.clientY)) {
-      label.style.opacity = '1';
+    document.addEventListener('mousemove', function (e) {
+      var overImage = !!imageUnderPoint(e.clientX, e.clientY);
+
+      document.body.classList.toggle('well-read-hover', overImage);
+      label.style.opacity = overImage ? '1' : '0';
       label.style.left = e.clientX + 'px';
       label.style.top = e.clientY + 'px';
-    } else {
-      label.style.opacity = '0';
-    }
-  });
-});
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
 </script>
