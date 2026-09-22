@@ -16,12 +16,8 @@
   z-index: 9999;
   pointer-events: none;
   opacity: 0;
+  margin: 0;
   color: #ffffff;
-  font-family: sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
   white-space: nowrap;
   transition: opacity 0.15s ease;
 }
@@ -42,7 +38,10 @@ body.well-read-hover:not(.sqs-edit-mode-active) * {
     if (document.body.classList.contains('sqs-edit-mode-active')) return;
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
-    var label = document.createElement('div');
+    // Uses an actual <h4> tag (not a div) so it automatically picks up
+    // whatever font/size/weight/letter-spacing/transform your theme
+    // applies to h4 headings in Site Styles, instead of a hardcoded font.
+    var label = document.createElement('h4');
     label.id = 'well-read-label';
     label.textContent = 'READ';
     document.body.appendChild(label);
