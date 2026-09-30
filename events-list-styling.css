@@ -1,9 +1,16 @@
+/* All rules below are scoped with body:not(.sqs-edit-mode-active) so they
+   never apply inside the Squarespace editor's own editing canvas — only on
+   the live published page. The editor renders its canvas at a narrower
+   width than the real browser window, which was tripping the mobile
+   media query below (meant only for real phones) and breaking the
+   editing view, even though the live site was never actually affected. */
+
 /* --- Red square arrow buttons --- */
-section[data-section-id="6ab503c517587b53ad577710"] svg.arrow-icon,
-section[data-section-id="6ab503c517587b53ad577710"] svg.mobile-arrow-icon {
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] svg.arrow-icon,
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] svg.mobile-arrow-icon {
   display: none !important;
 }
-section[data-section-id="6ab503c517587b53ad577710"] button[class*="__arrow-button"] {
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] button[class*="__arrow-button"] {
   background-color: #E60F19 !important;
   border-radius: 0 !important;
   width: 44px !important;
@@ -12,23 +19,23 @@ section[data-section-id="6ab503c517587b53ad577710"] button[class*="__arrow-butto
 }
 
 /* --- Remove top padding --- */
-section[data-section-id="6ab503c517587b53ad577710"] {
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] {
   padding-top: 0 !important;
 }
-section[data-section-id="6ab503c517587b53ad577710"] .user-items-list,
-section[data-section-id="6ab503c517587b53ad577710"] .content-wrapper,
-section[data-section-id="6ab503c517587b53ad577710"] .section-background {
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .user-items-list,
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .content-wrapper,
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .section-background {
   padding-top: 0 !important;
   min-height: 0 !important;
 }
 
 /* --- Equal-height cards + centered "READ" button pinned to bottom --- */
-section[data-section-id="6ab503c517587b53ad577710"] .list-item-content {
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content {
   position: relative !important;
   height: 20px !important;
   padding-bottom: 70px !important;
 }
-section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-wrapper {
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-wrapper {
   position: absolute !important;
   left: 0 !important;
   right: 0 !important;
@@ -38,8 +45,8 @@ section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-w
   width: auto !important;
   margin: 0 !important;
 }
-section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-wrapper a,
-section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-wrapper button {
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-wrapper a,
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-wrapper button {
   width: 320px !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -47,14 +54,14 @@ section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-w
   margin: 0 !important;
   border-radius: 0 !important;
 }
-section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-container {
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-container {
   display: flex !important;
   justify-content: flex-start !important;
   text-align: left !important;
   margin-top: 7% !important;
   max-width: 100% !important;
 }
-section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-container {
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-container {
   display: flex !important;
   justify-content: flex-start !important;
   text-align: left !important;
@@ -66,16 +73,16 @@ section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-c
 
 /* --- Mobile only (phones): stacked list instead of carousel --- */
 @media screen and (max-width: 600px) {
-  section[data-section-id="6ab503c517587b53ad577710"] .user-items-list-carousel {
+  body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .user-items-list-carousel {
     overflow-x: visible !important;
     overflow-y: visible !important;
   }
-  section[data-section-id="6ab503c517587b53ad577710"] .user-items-list-carousel__slides {
+  body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .user-items-list-carousel__slides {
     display: flex !important;
     flex-direction: column !important;
     flex-wrap: nowrap !important;
   }
-  section[data-section-id="6ab503c517587b53ad577710"] .user-items-list-carousel__slide {
+  body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .user-items-list-carousel__slide {
     width: 100% !important;
     max-width: 100% !important;
     flex: 0 0 auto !important;
@@ -83,14 +90,14 @@ section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-c
     transform: none !important;
     opacity: 1 !important;
   }
-  section[data-section-id="6ab503c517587b53ad577710"] [aria-label*="Previous" i],
-  section[data-section-id="6ab503c517587b53ad577710"] [aria-label*="Next" i],
-  section[data-section-id="6ab503c517587b53ad577710"] [class*="arrow"],
-  section[data-section-id="6ab503c517587b53ad577710"] [class*="pagination"] {
+  body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] [aria-label*="Previous" i],
+  body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] [aria-label*="Next" i],
+  body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] [class*="arrow"],
+  body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] [class*="pagination"] {
     display: none !important;
   }
 }
-section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-wrapper a,
-section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-wrapper button {
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-wrapper a,
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-wrapper button {
   width: 400px !important;
 }
