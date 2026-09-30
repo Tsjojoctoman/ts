@@ -234,6 +234,11 @@ document.addEventListener('DOMContentLoaded', function () {
   var sec2 = document.querySelector('section[data-section-id="6ab117879e98ff097bf014ba"]');
   if (!sec1 || !sec2) return;
 
+  // Remember exactly where these sections came from so we can put them
+  // back if edit mode turns on later (see the MutationObserver below).
+  var originalParent = sec1.parentNode;
+  var originalNextSibling = sec1.nextSibling;
+
   var box = document.createElement('div');
   box.id = 'hscroll-box';
   var inner = document.createElement('div');
@@ -243,6 +248,31 @@ document.addEventListener('DOMContentLoaded', function () {
   box.appendChild(inner);
   inner.appendChild(sec1);
   inner.appendChild(sec2);
+
+  // The edit-mode check above only runs once, at initial page load. If
+  // the user starts on this page in normal view and *then* enters the
+  // Squarespace editor without a full page reload, sqs-edit-mode-active
+  // gets added to <body> after we've already reparented sec1/sec2 into
+  // our own wrapper divs -- leaving the editor's own internal tracking
+  // of the page structure out of sync with the real DOM, which crashes
+  // it (NotFoundError: removeChild) the moment it tries to touch
+  // anything near these sections. Watching for that class appearing and
+  // undoing the reparenting immediately keeps the editor's expectations
+  // intact.
+  var reverted = false;
+  function revertToOriginalPosition() {
+    if (reverted) return;
+    reverted = true;
+    originalParent.insertBefore(sec1, originalNextSibling);
+    originalParent.insertBefore(sec2, originalNextSibling);
+    box.remove();
+  }
+
+  new MutationObserver(function () {
+    if (document.body.classList.contains('sqs-edit-mode-active')) {
+      revertToOriginalPosition();
+    }
+  }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
   var progress = 0;
   var maxScroll = 0;
@@ -259,6 +289,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function handleDelta(deltaY, preventDefault) {
+    if (reverted) return false;
     var rect = box.getBoundingClientRect();
     var visible = rect.top < window.innerHeight && rect.bottom > 0;
     if (!visible) {
