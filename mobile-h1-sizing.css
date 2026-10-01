@@ -1,16 +1,40 @@
-/* Paste into Design > Custom CSS (same panel that already has your
-   accordion-item h1 rule). Makes H1 headings site-wide use 3rem on
-   mobile, EXCEPT inside accordions — those are excluded so whatever
-   was already controlling their size (your existing accordion rule,
-   or something more specific than it) keeps working exactly as before.
+/* Paste into Design > Custom CSS, REPLACING both of your existing
+   "@media (max-width: 767px)" blocks for H1/accordion sizing (the
+   plain global h1 rule and the .accordion-item h1 / .sqs-block-accordion
+   h1 rule) with this single combined block.
 
-   #siteWrapper h1 has higher specificity than .accordion-item h1 (ID
-   beats class), so without the :not() exclusions here it would
-   override the accordion's own sizing too — which is what caused
-   accordion H1s to visibly grow after the first version of this rule. */
+   Root cause: .accordion-item h1 was ALWAYS losing to Squarespace's own
+   typography CSS (also !important, loads later) — it just went
+   unnoticed until the global h1 rule below made every other H1 shrink,
+   making the still-oversized accordion H1 stand out. Fix is the same
+   #siteWrapper specificity boost used for the global rule, applied to
+   the accordion selector too. */
 @media (max-width: 767px) {
   #siteWrapper h1:not(.accordion-item h1):not(.sqs-block-accordion h1) {
     font-size: 3rem !important;
     line-height: 1.3;
+  }
+
+  #siteWrapper .accordion-item h1,
+  #siteWrapper .sqs-block-accordion h1 {
+    font-size: 3rem !important;
+    line-height: 1.3;
+  }
+
+  .accordion-item .icon,
+  .accordion-item svg,
+  .sqs-block-accordion .icon,
+  .sqs-block-accordion svg,
+  .sqs-block-accordion .plus-icon,
+  .accordion-item .plus-icon {
+    width: 10px !important;
+    height: 10px !important;
+  }
+
+  .sqs-block-accordion .accordion-icon-container,
+  .sqs-block-accordion .plus {
+    width: 35px !important;
+    height: 35px !important;
+    --accordion-icon-thickness: 3px;
   }
 }
