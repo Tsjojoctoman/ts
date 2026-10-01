@@ -164,25 +164,17 @@ body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad57771
   min-height: 0 !important;
 }
 
-/* --- Equal-height cards + button pinned to bottom. The pinned-bottom
-   part is the same technique as the blog carousel section
-   (6aa80c05866d1f24313a8193). On top of that, stretch each slide in
-   the row to the tallest sibling's height (align-items: stretch on
-   the row, slide itself as a column flex container, .list-item-content
-   set to fill it via flex: 1 1 auto) so that when .list-item-content
-   pins its button to its own bottom edge, that edge lines up at the
-   same height across the whole row -- not just within each card. --- */
-body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .user-items-list-carousel__slides {
-  align-items: stretch !important;
-}
-body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .user-items-list-carousel__slide {
-  display: flex !important;
-  flex-direction: column !important;
-}
+/* --- Equal-height cards + button pinned to bottom. Fixed height is
+   what actually guarantees every card the same total height (the
+   align-items: stretch approach didn't work -- the carousel's row
+   isn't a flex container at this width, only at the 600px mobile
+   breakpoint), tuned low enough that a 1-line title doesn't leave a
+   huge empty gap, but tall enough to fit a 2-line title without the
+   button overlapping it. --- */
 body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content {
   position: relative !important;
+  height: 80px !important;
   padding-bottom: 50px !important;
-  flex: 1 1 auto !important;
 }
 body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-wrapper {
   position: absolute !important;
