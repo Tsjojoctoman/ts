@@ -38,19 +38,18 @@ section[data-section-id="6a92cde6bbed3c398a6038e1"] {
     section.appendChild(label);
 
     // The site's header is a "fixed header" style (floats over scrolling
-    // content, confirmed via the tweak-fixed-header body class), so it
-    // isn't part of normal document flow and the label needs its own
-    // top offset computed from the header's actual live height, rather
-    // than a hardcoded pixel value that would only be right at one
-    // screen width.
+    // content), so the label's top offset should just equal the header's
+    // own height (the hero section is the first thing on the page, so
+    // its natural top sits at document position 0). Deliberately NOT
+    // using section.getBoundingClientRect().top here -- that's
+    // viewport-relative and changes while scrolled, and on mobile the
+    // address bar hiding/showing fires extra "resize" events mid-scroll,
+    // which was recomputing the offset from a scrolled (wrong) position
+    // and making the label visibly jump/drift.
     function positionBelowHeader() {
       var header = document.getElementById('header');
-      var headerBottom = header ? header.getBoundingClientRect().bottom : 0;
-      var sectionTop = section.getBoundingClientRect().top;
-      // header.getBoundingClientRect() is viewport-relative, but the
-      // label's "top" is relative to its offsetParent (the section), so
-      // convert between the two coordinate spaces.
-      label.style.top = (headerBottom - sectionTop) + 'px';
+      var headerHeight = header ? header.getBoundingClientRect().height : 0;
+      label.style.top = headerHeight + 'px';
     }
 
     positionBelowHeader();
