@@ -164,16 +164,15 @@ body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad57771
   min-height: 0 !important;
 }
 
-/* --- Equal-height cards + button pinned to bottom. Fixed height is
-   what actually guarantees every card the same total height (the
-   align-items: stretch approach didn't work -- the carousel's row
-   isn't a flex container at this width, only at the 600px mobile
-   breakpoint), tuned low enough that a 1-line title doesn't leave a
-   huge empty gap, but tall enough to fit a 2-line title without the
-   button overlapping it. --- */
+/* --- Equal-height cards + button pinned to bottom. Height itself is
+   NOT set here -- a script further down measures each card's actual
+   content height and forces them all equal via JS, since CSS-only
+   attempts (fixed guessed px, flexbox stretch) weren't reliable. Just
+   position:relative + padding-bottom so the bottom-pinned button has
+   room, and so the script's height measurement already accounts for
+   that reserved space. --- */
 body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content {
   position: relative !important;
-  height: 80px !important;
   padding-bottom: 50px !important;
 }
 body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-wrapper {
@@ -366,4 +365,60 @@ document.addEventListener('DOMContentLoaded', function () {
     touchY = null;
   }, { passive: true });
 });
+</script>
+
+<script>
+(function () {
+  function init() {
+    if (document.body.classList.contains('sqs-edit-mode-active')) return;
+
+    var section = document.querySelector('section[data-section-id="6ab503c517587b53ad577710"]');
+    if (!section) return;
+
+    // Measures every card's natural content height (title + date +
+    // the reserved button padding, since padding-bottom still applies
+    // with height:auto) and forces them all to match the tallest one,
+    // so the position:absolute bottom-pinned button lands at the same
+    // row height regardless of whether a title wraps to one or two
+    // lines. Re-runs on resize/load and whenever the carousel's DOM
+    // changes (e.g. Squarespace cloning slides for a looping carousel).
+    function equalize() {
+      var items = section.querySelectorAll('.list-item-content');
+      if (!items.length) return;
+
+      items.forEach(function (item) {
+        item.style.removeProperty('height');
+      });
+
+      var max = 0;
+      items.forEach(function (item) {
+        if (item.scrollHeight > max) max = item.scrollHeight;
+      });
+
+      items.forEach(function (item) {
+        item.style.setProperty('height', max + 'px', 'important');
+      });
+    }
+
+    equalize();
+    window.addEventListener('resize', equalize);
+    window.addEventListener('load', equalize);
+
+    var scheduled = false;
+    new MutationObserver(function () {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(function () {
+        scheduled = false;
+        equalize();
+      });
+    }).observe(section, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
 </script>
