@@ -1,0 +1,14 @@
+/* Paste into Design > Custom CSS (same panel that already has your
+   accordion-item h1 rule). Makes ALL h1 headings site-wide use the same
+   3rem mobile size the accordion ones already use, instead of the
+   larger default. Put this ABOVE your existing accordion-item h1 rule
+   so the accordion rule's !important still wins for that specific case
+   (doesn't matter much since both are !important and equal specificity
+   would just mean last-one-wins, but keeping it above is the safer
+   order). */
+@media (max-width: 767px) {
+  h1 {
+    font-size: 3rem !important;
+    line-height: 1.3;
+  }
+}
