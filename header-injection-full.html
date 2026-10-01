@@ -164,6 +164,28 @@ body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad57771
   min-height: 0 !important;
 }
 
+/* --- Equal-height cards so buttons line up across a row, WITHOUT
+   forcing the button's own position -- it still follows whatever
+   placement/alignment you set in the editor. Cards in a row stretch to
+   match the tallest card's natural height (via align-items: stretch),
+   then margin-top: auto pushes the button to the bottom of that space
+   -- unlike position: absolute, this doesn't override anything the
+   editor controls, it just uses the extra room. --- */
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .user-items-list-carousel__slides {
+  align-items: stretch !important;
+}
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .user-items-list-carousel__slide {
+  display: flex !important;
+}
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+}
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-wrapper {
+  margin-top: auto !important;
+}
+
 /* --- Mobile only (phones): stacked list instead of carousel --- */
 @media screen and (max-width: 600px) {
   body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .user-items-list-carousel {
