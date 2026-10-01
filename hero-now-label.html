@@ -26,6 +26,8 @@ section[data-section-id="6a92cde6bbed3c398a6038e1"] {
 <script>
 (function () {
   function init() {
+    if (document.body.classList.contains('sqs-edit-mode-active')) return;
+
     var section = document.querySelector('section[data-section-id="6a92cde6bbed3c398a6038e1"]');
     if (!section) return;
     if (document.getElementById('hero-now-label')) return;
