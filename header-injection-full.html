@@ -164,12 +164,25 @@ body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad57771
   min-height: 0 !important;
 }
 
-/* --- Equal-height cards + button pinned to bottom. Exact same
-   technique as the blog carousel section (6aa80c05866d1f24313a8193),
-   which is confirmed working with no overlap. --- */
+/* --- Equal-height cards + button pinned to bottom. The pinned-bottom
+   part is the same technique as the blog carousel section
+   (6aa80c05866d1f24313a8193). On top of that, stretch each slide in
+   the row to the tallest sibling's height (align-items: stretch on
+   the row, slide itself as a column flex container, .list-item-content
+   set to fill it via flex: 1 1 auto) so that when .list-item-content
+   pins its button to its own bottom edge, that edge lines up at the
+   same height across the whole row -- not just within each card. --- */
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .user-items-list-carousel__slides {
+  align-items: stretch !important;
+}
+body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .user-items-list-carousel__slide {
+  display: flex !important;
+  flex-direction: column !important;
+}
 body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content {
   position: relative !important;
   padding-bottom: 50px !important;
+  flex: 1 1 auto !important;
 }
 body:not(.sqs-edit-mode-active) section[data-section-id="6ab503c517587b53ad577710"] .list-item-content__button-wrapper {
   position: absolute !important;
