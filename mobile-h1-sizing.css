@@ -1,15 +1,15 @@
 /* Paste into Design > Custom CSS (same panel that already has your
-   accordion-item h1 rule). Makes ALL h1 headings site-wide use the same
-   3rem mobile size the accordion ones already use, instead of the
-   larger default.
+   accordion-item h1 rule). Makes H1 headings site-wide use 3rem on
+   mobile, EXCEPT inside accordions — those are excluded so whatever
+   was already controlling their size (your existing accordion rule,
+   or something more specific than it) keeps working exactly as before.
 
-   Plain "h1 { ... !important }" has very low specificity (tag only), so
-   it loses to Squarespace's own typography CSS, which also uses
-   !important on headings and loads after your Custom CSS. #siteWrapper
-   is the real id of Squarespace's outer page wrapper, so chaining it
-   onto the selector raises specificity enough to win. */
+   #siteWrapper h1 has higher specificity than .accordion-item h1 (ID
+   beats class), so without the :not() exclusions here it would
+   override the accordion's own sizing too — which is what caused
+   accordion H1s to visibly grow after the first version of this rule. */
 @media (max-width: 767px) {
-  #siteWrapper h1 {
+  #siteWrapper h1:not(.accordion-item h1):not(.sqs-block-accordion h1) {
     font-size: 3rem !important;
     line-height: 1.3;
   }
