@@ -5,16 +5,17 @@
    sections 6a7b1a77240b942222f5464f/6ab117879e98ff097bf014ba. The
    matching JS wrapper logic lives in header-injection-full.html.
 
-   No "align-items: stretch" here on purpose -- that was forcing "Our
-   Story" (short text) to match "About Manifesto"'s height (tall,
-   because of its image), leaving a block of empty space at the bottom
-   of "Our Story" with nothing to fill it. Each panel now just sits at
-   its own natural height; #hscroll-box's own height comes from
-   whichever panel is naturally taller (the default behavior of a flex
-   row with no align-items override and no height set on the row
-   itself -- it sizes to the tallest child). The shorter panel no
-   longer carries blank space, at the cost of the two panels not
-   lining up edge-to-edge if one is shorter than the other. */
+   align-items: flex-start (NOT omitted -- flex containers default to
+   align-items: stretch, so simply leaving the property out still
+   stretches children exactly as before; it has to be explicitly
+   overridden). Without this, "Our Story" (short text) was being
+   force-matched to "About Manifesto"'s height (tall, because of its
+   image), leaving a block of empty space at the bottom of "Our Story"
+   with nothing to fill it. Each panel now sits at its own natural
+   height, top-aligned; #hscroll-box's own height still comes from
+   whichever panel is naturally taller. The shorter panel no longer
+   carries blank space, at the cost of the two panels not lining up
+   edge-to-edge if one is shorter than the other. */
 @media screen and (min-width: 601px) {
   body:not(.sqs-edit-mode-active) #hscroll-box {
     width: 100%;
@@ -23,6 +24,7 @@
   }
   body:not(.sqs-edit-mode-active) #hscroll-inner {
     display: flex;
+    align-items: flex-start;
     width: 200%;
   }
   body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464f"],
