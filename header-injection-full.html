@@ -242,7 +242,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var sec1 = document.querySelector('section[data-section-id="6a7b1a77240b942222f5464f"]');
   var sec2 = document.querySelector('section[data-section-id="6ab117879e98ff097bf014ba"]');
-  if (!sec1 || !sec2) return;
+  var sec3 = document.querySelector('section[data-section-id="6ab12fd813f7a25fe8ff1e9d"]');
+  if (!sec1 || !sec2 || !sec3) return;
 
   // Remember exactly where these sections came from so we can put them
   // back if edit mode turns on later (see the MutationObserver below).
@@ -258,6 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
   box.appendChild(inner);
   inner.appendChild(sec1);
   inner.appendChild(sec2);
+  inner.appendChild(sec3);
 
   // The edit-mode check above only runs once, at initial page load. If
   // the user starts on this page in normal view and *then* enters the
@@ -275,6 +277,7 @@ document.addEventListener('DOMContentLoaded', function () {
     reverted = true;
     originalParent.insertBefore(sec1, originalNextSibling);
     originalParent.insertBefore(sec2, originalNextSibling);
+    originalParent.insertBefore(sec3, originalNextSibling);
     box.remove();
   }
 
@@ -308,6 +311,25 @@ document.addEventListener('DOMContentLoaded', function () {
     inner.style.transform = 'translateX(-' + (progress * maxScroll) + 'px)';
   }
 
+  // Writing to the page (scrollTo, the transform) on every single wheel
+  // tick -- which can fire many times per animation frame on a
+  // trackpad -- forces the browser to redo layout repeatedly and feels
+  // laggy. Batches those writes into one flush per animation frame
+  // instead; the preventDefault() decision itself still happens
+  // synchronously per tick (required by the browser), only the actual
+  // scrollTo/render work is deferred and coalesced.
+  var pendingTop = null;
+  var rafId = null;
+
+  function flush() {
+    rafId = null;
+    if (pendingTop !== null) {
+      window.scrollTo(0, pendingTop);
+      pendingTop = null;
+    }
+    render();
+  }
+
   function handleDelta(deltaY, preventDefault) {
     if (reverted) return false;
     var rect = box.getBoundingClientRect();
@@ -328,11 +350,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     preventDefault();
-    window.scrollTo(0, window.scrollY + rect.top);
+    pendingTop = window.scrollY + rect.top;
     if (maxScroll > 0) {
       progress += deltaY / maxScroll;
       progress = Math.min(Math.max(progress, 0), 1);
-      render();
+    }
+    if (rafId === null) {
+      rafId = requestAnimationFrame(flush);
     }
     return true;
   }
