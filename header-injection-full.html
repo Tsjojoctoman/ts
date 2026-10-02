@@ -287,6 +287,17 @@ document.addEventListener('DOMContentLoaded', function () {
   var progress = 0;
   var maxScroll = 0;
 
+  // Once we commit to exiting (forward past the end, or backward past
+  // the start), this latches true and the box stops responding to ANY
+  // further scroll input -- including a stray tiny reverse blip from
+  // trackpad/phone momentum -- until it's fully left the viewport.
+  // Without this latch, native scroll takes several ticks to carry the
+  // box out of view (unlike the old instant animated jump), and a
+  // single backward blip during that window would look like "while not
+  // at the very start, scrolling backward" and snap the viewport back
+  // to the box, which read as jumping back to the previous section.
+  var exiting = null;
+
   function recalc() {
     maxScroll = inner.scrollWidth - box.clientWidth;
   }
@@ -297,23 +308,22 @@ document.addEventListener('DOMContentLoaded', function () {
     inner.style.transform = 'translateX(-' + (progress * maxScroll) + 'px)';
   }
 
-  // Once progress hits either end, this stops intercepting entirely
-  // (returns false, no preventDefault) instead of firing a manual
-  // scrollTo animation and blocking further input until it finishes --
-  // that hand-off is what caused the stutter/jump feeling. Letting the
-  // browser's own native scroll take over exactly where we left off
-  // gives a seamless transition into normal vertical scrolling.
   function handleDelta(deltaY, preventDefault) {
     if (reverted) return false;
     var rect = box.getBoundingClientRect();
     var visible = rect.top < window.innerHeight && rect.bottom > 0;
-    if (!visible) return false;
+    if (!visible) {
+      exiting = null;
+      return false;
+    }
+    if (exiting) return false;
 
     var scrollingForward = deltaY > 0;
     var atEnd = progress >= 1;
     var atStart = progress <= 0;
 
     if ((scrollingForward && atEnd) || (!scrollingForward && atStart)) {
+      exiting = scrollingForward ? 'forward' : 'back';
       return false;
     }
 
