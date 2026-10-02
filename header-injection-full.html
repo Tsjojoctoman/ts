@@ -306,6 +306,14 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   recalc();
   window.addEventListener('resize', recalc);
+  // "Our Allies" has several logo images that load asynchronously and
+  // can grow inner's total width after the recalc() above already ran
+  // at DOMContentLoaded, leaving maxScroll stale (too small) -- the
+  // pan then runs out of input/scroll distance before the visual
+  // content has actually finished sliding into view, which looked
+  // like getting stuck right as "Our Allies" appeared. Re-run recalc()
+  // once everything (including images) has fully loaded.
+  window.addEventListener('load', recalc);
 
   function render() {
     inner.style.transform = 'translateX(-' + (progress * maxScroll) + 'px)';
