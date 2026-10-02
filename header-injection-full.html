@@ -290,32 +290,18 @@ document.addEventListener('DOMContentLoaded', function () {
   var progress = 0;
   var maxScroll = 0;
 
-  // Once we commit to exiting (forward past the end, or backward past
-  // the start), this latches true and the box stops responding to ANY
-  // further scroll input -- including a stray tiny reverse blip from
-  // trackpad/phone momentum -- until it's fully left the viewport.
-  // Without this latch, native scroll takes several ticks to carry the
-  // box out of view (unlike the old instant animated jump), and a
-  // single backward blip during that window would look like "while not
-  // at the very start, scrolling backward" and snap the viewport back
-  // to the box, which read as jumping back to the previous section.
-  var exiting = null;
-
-  // Temporary: call __hscrollDebug() in the browser console at the
-  // moment the scroll feels stuck to see the real live numbers,
-  // instead of guessing. Remove once the bug's actually fixed.
-  window.__hscrollDebug = function () {
-    return {
-      progress: progress,
-      maxScroll: maxScroll,
-      exiting: exiting,
-      boxWidth: box.clientWidth,
-      boxRectTop: box.getBoundingClientRect().top,
-      boxRectBottom: box.getBoundingClientRect().bottom,
-      innerScrollWidth: inner.scrollWidth,
-      windowInnerHeight: window.innerHeight
-    };
-  };
+  // Once the pan has been run through fully in a direction (reaching
+  // the end going forward, or back to the start going backward), this
+  // permanently retires the box -- it never intercepts scroll again,
+  // in either direction, for the rest of the page's lifetime. This is
+  // a one-time intro effect, not something that should replay: without
+  // this, scrolling back up after finishing the forward pan would
+  // re-trigger the reverse pan (since progress was still sitting at 1,
+  // "not at the start" was true, so any backward scroll looked like
+  // "resume panning backward"), which captured the scroll and pinned
+  // the viewport to the box every tick -- looking exactly like
+  // scrolling up stopped working entirely.
+  var retired = false;
 
   function recalc() {
     maxScroll = inner.scrollWidth - box.clientWidth;
@@ -356,20 +342,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function handleDelta(deltaY, preventDefault) {
     if (reverted) return false;
+    if (retired) return false;
     var rect = box.getBoundingClientRect();
     var visible = rect.top < window.innerHeight && rect.bottom > 0;
-    if (!visible) {
-      exiting = null;
-      return false;
-    }
-    if (exiting) return false;
+    if (!visible) return false;
 
     var scrollingForward = deltaY > 0;
     var atEnd = progress >= 1;
     var atStart = progress <= 0;
 
     if ((scrollingForward && atEnd) || (!scrollingForward && atStart)) {
-      exiting = scrollingForward ? 'forward' : 'back';
+      retired = true;
       return false;
     }
 
