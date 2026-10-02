@@ -279,6 +279,17 @@ document.addEventListener('DOMContentLoaded', function () {
     originalParent.insertBefore(sec2, originalNextSibling);
     originalParent.insertBefore(sec3, originalNextSibling);
     box.remove();
+    // The Design > Custom CSS panel still targets these three sections
+    // with width: 33.333% !important / flex: 0 0 33.333% !important
+    // (needed while they're flex children of #hscroll-inner). Once
+    // unwrapped back into normal stacked document flow, those rules
+    // would otherwise squeeze each one to a third of the page's width
+    // forever -- force them back to full-width directly, inline
+    // !important beats the external stylesheet's !important here.
+    [sec1, sec2, sec3].forEach(function (sec) {
+      sec.style.setProperty('width', '100%', 'important');
+      sec.style.setProperty('flex', 'none', 'important');
+    });
   }
 
   new MutationObserver(function () {
@@ -353,6 +364,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if ((scrollingForward && atEnd) || (!scrollingForward && atStart)) {
       retired = true;
+      // Freezing the horizontal position permanently (the old
+      // behavior) meant scrolling back to the top of the page still
+      // showed "Our Allies" instead of "About Manifesto" -- the page
+      // itself scrolled fine, but the content never changed back,
+      // which looked exactly like scrolling up had stopped working.
+      // Unwrapping back to normal stacked sections (same function used
+      // for the editor-safety revert) means each section keeps its own
+      // real position from here on, so scrolling anywhere just shows
+      // what's actually there, in either direction, permanently.
+      revertToOriginalPosition();
       return false;
     }
 
