@@ -286,6 +286,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var progress = 0;
   var maxScroll = 0;
+  var released = null;
 
   function recalc() {
     maxScroll = inner.scrollWidth - box.clientWidth;
@@ -297,25 +298,38 @@ document.addEventListener('DOMContentLoaded', function () {
     inner.style.transform = 'translateX(-' + (progress * maxScroll) + 'px)';
   }
 
-  // Once progress hits either end, this just stops intercepting scroll
-  // entirely (returns false, no preventDefault) instead of firing a
-  // manual scrollTo animation and blocking further input until it
-  // finishes -- that hand-off was what caused the stutter/jump feeling.
-  // Letting the browser's own native scroll take over exactly where we
-  // left off gives a seamless, uninterrupted transition into normal
-  // vertical scrolling for whatever section comes next.
   function handleDelta(deltaY, preventDefault) {
     if (reverted) return false;
     var rect = box.getBoundingClientRect();
     var visible = rect.top < window.innerHeight && rect.bottom > 0;
-    if (!visible) return false;
+    if (!visible) {
+      released = null;
+      return false;
+    }
 
     var scrollingForward = deltaY > 0;
+
+    if (released === 'forward' && scrollingForward) {
+      preventDefault();
+      return true;
+    }
+    if (released === 'back' && !scrollingForward) {
+      preventDefault();
+      return true;
+    }
+    if (released) released = null;
+
     var atEnd = progress >= 1;
     var atStart = progress <= 0;
-
     if ((scrollingForward && atEnd) || (!scrollingForward && atStart)) {
-      return false;
+      released = scrollingForward ? 'forward' : 'back';
+      preventDefault();
+      if (scrollingForward) {
+        window.scrollTo({ top: window.scrollY + rect.bottom, behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: window.scrollY + rect.top - window.innerHeight, behavior: 'smooth' });
+      }
+      return true;
     }
 
     preventDefault();
