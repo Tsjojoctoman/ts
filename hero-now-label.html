@@ -54,6 +54,14 @@ section[data-section-id="6a92cde6bbed3c398a6038e1"] {
 
     positionBelowHeader();
     window.addEventListener('resize', positionBelowHeader);
+    // The header (logo, nav, fonts) can take a moment to settle into
+    // its final rendered height, especially in Squarespace's preview
+    // mode -- re-checking once after full page load, and once more a
+    // beat later as a safety net, catches cases where the very first
+    // measurement ran before the header had actually reached its real
+    // size, which was making the label land too low intermittently.
+    window.addEventListener('load', positionBelowHeader);
+    setTimeout(positionBelowHeader, 500);
   }
 
   if (document.readyState === 'loading') {
