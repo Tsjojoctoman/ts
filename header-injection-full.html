@@ -301,6 +301,22 @@ document.addEventListener('DOMContentLoaded', function () {
   // to the box, which read as jumping back to the previous section.
   var exiting = null;
 
+  // Temporary: call __hscrollDebug() in the browser console at the
+  // moment the scroll feels stuck to see the real live numbers,
+  // instead of guessing. Remove once the bug's actually fixed.
+  window.__hscrollDebug = function () {
+    return {
+      progress: progress,
+      maxScroll: maxScroll,
+      exiting: exiting,
+      boxWidth: box.clientWidth,
+      boxRectTop: box.getBoundingClientRect().top,
+      boxRectBottom: box.getBoundingClientRect().bottom,
+      innerScrollWidth: inner.scrollWidth,
+      windowInnerHeight: window.innerHeight
+    };
+  };
+
   function recalc() {
     maxScroll = inner.scrollWidth - box.clientWidth;
   }
