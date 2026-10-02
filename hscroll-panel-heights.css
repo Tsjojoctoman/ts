@@ -1,0 +1,45 @@
+/* Paste into Design > Custom CSS, replacing the existing block that
+   starts with "@media screen and (min-width: 601px) { body:not(...)
+   #hscroll-box {...". This is the sizing half of the About Us page's
+   horizontal-scroll-locked pair (About Manifesto / Our Story);
+   sections 6a7b1a77240b942222f5464f/6ab117879e98ff097bf014ba. The
+   matching JS wrapper logic lives in header-injection-full.html.
+
+   No "align-items: stretch" here on purpose -- that was forcing "Our
+   Story" (short text) to match "About Manifesto"'s height (tall,
+   because of its image), leaving a block of empty space at the bottom
+   of "Our Story" with nothing to fill it. Each panel now just sits at
+   its own natural height; #hscroll-box's own height comes from
+   whichever panel is naturally taller (the default behavior of a flex
+   row with no align-items override and no height set on the row
+   itself -- it sizes to the tallest child). The shorter panel no
+   longer carries blank space, at the cost of the two panels not
+   lining up edge-to-edge if one is shorter than the other. */
+@media screen and (min-width: 601px) {
+  body:not(.sqs-edit-mode-active) #hscroll-box {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+  body:not(.sqs-edit-mode-active) #hscroll-inner {
+    display: flex;
+    width: 200%;
+  }
+  body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464f"],
+  body:not(.sqs-edit-mode-active) section[data-section-id="6ab117879e98ff097bf014ba"] {
+    width: 50% !important;
+    flex: 0 0 50% !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+    min-height: 0 !important;
+  }
+  body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464f"],
+  body:not(.sqs-edit-mode-active) section[data-section-id="6ab117879e98ff097bf014ba"] {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  body:not(.sqs-edit-mode-active) section[data-section-id="6a7b1a77240b942222f5464f"]::-webkit-scrollbar,
+  body:not(.sqs-edit-mode-active) section[data-section-id="6ab117879e98ff097bf014ba"]::-webkit-scrollbar {
+    display: none !important;
+  }
+}
