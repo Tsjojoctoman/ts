@@ -1,0 +1,226 @@
+<!-- Paste into Settings > Advanced > Code Injection > FOOTER (site-wide).
+     Automatically shows a "Related Content" section on any single item
+     page within Blog, Podcast, Audiobooks, Events, or Shop
+     (manifestopress.coop/blogs, /podcasts, /audiobooks, /events, /shop),
+     pulling matching items from ALL FIVE of those collections -- not
+     just whichever one the current page belongs to.
+
+     None of these collections use Tags except Shop, so matching is
+     done by shared significant words between the current item's
+     title+body and each candidate item's title+excerpt, instead of
+     relying on tags. This is literal keyword overlap, not true
+     semantic understanding -- it'll connect a post that says
+     "revolutionaries" a lot with a book whose excerpt also says
+     "revolutionaries" a lot, but won't know that's related to an
+     article about, say, "Che Guevara" unless they share actual words.
+
+     This is a first working version -- Squarespace's JSON structure
+     (image field names especially) can vary a bit by collection type
+     and template, so the image may not show correctly for every
+     collection until confirmed against your real site and adjusted. -->
+
+<div id="related-content-section" style="display:none;">
+  <h2 id="related-content-heading">Related Content</h2>
+  <div id="related-content-grid"></div>
+</div>
+
+<style>
+#related-content-section {
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 0 24px;
+}
+#related-content-heading {
+  margin-bottom: 24px;
+}
+#related-content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+}
+.related-content-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+.related-content-card img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+  margin-bottom: 10px;
+  background: #eee;
+}
+.related-content-card .related-content-type {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #E60F19;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.related-content-card .related-content-title {
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 1.3;
+}
+</style>
+
+<script>
+(function () {
+  // Each entry: the collection's URL path, and the label shown on its
+  // cards. Edit these if any of the actual slugs differ.
+  var COLLECTIONS = [
+    { path: '/blogs', label: 'Blog' },
+    { path: '/podcasts', label: 'Podcast' },
+    { path: '/audiobooks', label: 'Audiobook' },
+    { path: '/events', label: 'Event' },
+    { path: '/shop', label: 'Book' }
+  ];
+  var MAX_RESULTS = 6;
+  var MIN_WORD_LENGTH = 4;
+  var TOP_KEYWORDS = 20;
+
+  var STOP_WORDS = ('the and of to a in is that it on for with as was but are this '
+    + 'be at by an or from have has had not their its they he she we you your i my '
+    + 'his her them which who what when where how why can will would should could '
+    + 'do does did so if than then there here also more most some such no nor only '
+    + 'own same too very just about into over after before between during while '
+    + 'again further once all any both each few other some than too very s t can '
+    + 'will just don now').split(' ');
+  var STOP_SET = {};
+  STOP_WORDS.forEach(function (w) { STOP_SET[w] = true; });
+
+  function stripHtml(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html || '';
+    return div.textContent || div.innerText || '';
+  }
+
+  function extractWords(text) {
+    return (text.toLowerCase().match(/[a-z]+/g) || [])
+      .filter(function (w) { return w.length >= MIN_WORD_LENGTH && !STOP_SET[w]; });
+  }
+
+  function topKeywords(text, count) {
+    var words = extractWords(text);
+    var freq = {};
+    words.forEach(function (w) { freq[w] = (freq[w] || 0) + 1; });
+    return Object.keys(freq)
+      .sort(function (a, b) { return freq[b] - freq[a]; })
+      .slice(0, count);
+  }
+
+  function scoreItem(keywords, itemText) {
+    var words = extractWords(itemText);
+    var wordCounts = {};
+    words.forEach(function (w) { wordCounts[w] = (wordCounts[w] || 0) + 1; });
+    var score = 0;
+    keywords.forEach(function (k) {
+      if (wordCounts[k]) score += wordCounts[k];
+    });
+    return score;
+  }
+
+  function fetchJSON(url) {
+    return fetch(url, { credentials: 'same-origin' })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .catch(function () { return null; });
+  }
+
+  function getItemImage(item) {
+    if (item.assetUrl) return item.assetUrl;
+    if (item.items && item.items[0] && item.items[0].assetUrl) return item.items[0].assetUrl;
+    return '';
+  }
+
+  function init() {
+    if (document.body.classList.contains('sqs-edit-mode-active')) return;
+
+    var currentUrl = window.location.pathname;
+    var isItemPage = COLLECTIONS.some(function (c) {
+      return currentUrl.indexOf(c.path + '/') === 0;
+    });
+    if (!isItemPage) return;
+
+    fetchJSON(currentUrl + '?format=json').then(function (pageData) {
+      if (!pageData || !pageData.item) return;
+
+      var currentItem = pageData.item;
+      var currentText = stripHtml(currentItem.title || '') + ' '
+        + stripHtml(currentItem.body || currentItem.excerpt || '');
+      var keywords = topKeywords(currentText, TOP_KEYWORDS);
+      if (!keywords.length) return;
+
+      var fetches = COLLECTIONS.map(function (c) {
+        return fetchJSON(c.path + '?format=json').then(function (data) {
+          return { collection: c, data: data };
+        });
+      });
+
+      Promise.all(fetches).then(function (results) {
+        var candidates = [];
+
+        results.forEach(function (result) {
+          if (!result.data || !result.data.items) return;
+          result.data.items.forEach(function (item) {
+            if (item.fullUrl === currentUrl) return;
+            var itemText = stripHtml(item.title || '') + ' ' + stripHtml(item.excerpt || '');
+            var score = scoreItem(keywords, itemText);
+            if (score > 0) {
+              candidates.push({
+                score: score,
+                title: item.title,
+                url: item.fullUrl,
+                image: getItemImage(item),
+                type: result.collection.label
+              });
+            }
+          });
+        });
+
+        candidates.sort(function (a, b) { return b.score - a.score; });
+        var top = candidates.slice(0, MAX_RESULTS);
+        if (!top.length) return;
+
+        var grid = document.getElementById('related-content-grid');
+        top.forEach(function (c) {
+          var a = document.createElement('a');
+          a.className = 'related-content-card';
+          a.href = c.url;
+
+          if (c.image) {
+            var img = document.createElement('img');
+            img.src = c.image;
+            img.alt = c.title;
+            a.appendChild(img);
+          }
+
+          var typeEl = document.createElement('div');
+          typeEl.className = 'related-content-type';
+          typeEl.textContent = c.type;
+          a.appendChild(typeEl);
+
+          var titleEl = document.createElement('div');
+          titleEl.className = 'related-content-title';
+          titleEl.textContent = c.title;
+          a.appendChild(titleEl);
+
+          grid.appendChild(a);
+        });
+
+        var section = document.getElementById('related-content-section');
+        var mainContent = document.querySelector('article') || document.querySelector('#page') || document.body;
+        mainContent.appendChild(section);
+        section.style.display = '';
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
