@@ -1,0 +1,204 @@
+<!-- Paste into Settings > Advanced > Code Injection > FOOTER (site-wide is
+     fine -- it only activates on the Shop list page itself).
+
+     Adds a sort bar above your Shop grid with: Featured (the manual order
+     you set in the editor), Name A-Z / Z-A, Price Low-High / High-Low, and
+     Newest / Oldest.
+
+     Title, price, and date all come from the page's own ?format=json feed
+     (same technique as related-content.html) rather than scraping visible
+     text, so sorting works regardless of what each product card's markup
+     looks like. The one thing that DOES depend on your template's markup
+     is grouping the cards themselves for reordering -- CARD_SELECTORS
+     below tries the common Squarespace 7.1 grid pattern first, then a
+     couple of fallbacks. If the sort bar doesn't show up at all, open
+     DevTools on your Shop page, confirm the real wrapper class around your
+     product cards, and add it to CARD_SELECTORS.
+
+     Price comes from the JSON product variant data first; if your site's
+     JSON doesn't expose price the way this expects, it falls back to
+     reading the visible price text off each card (looking for
+     ".sqs-money-native" first, then any "$" amount in the card's text) --
+     flagging this the same way related-content.html flags the image field,
+     since Squarespace's commerce JSON shape has varied by version. -->
+
+<style>
+#shop-sort-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  max-width: 1200px;
+  margin: 0 auto 24px;
+  padding: 0 24px;
+}
+#shop-sort-bar label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #666;
+}
+#shop-sort-bar select {
+  font-size: 14px;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+}
+</style>
+
+<script>
+(function () {
+  var SHOP_PATH = '/shop'; // edit if your Shop list page lives at a different path
+
+  var CARD_SELECTORS = [
+    '.ProductList-grid > *',   // Squarespace 7.1 product grid
+    '.ProductList > .grid-item',
+    '.grid-container > .grid-item' // 7.0-style summary/product grid
+  ];
+
+  function findCards() {
+    for (var i = 0; i < CARD_SELECTORS.length; i++) {
+      var cards = document.querySelectorAll(CARD_SELECTORS[i]);
+      if (cards.length) {
+        return { cards: Array.prototype.slice.call(cards), container: cards[0].parentElement };
+      }
+    }
+    return null;
+  }
+
+  function cardHref(card) {
+    var a = card.querySelector('a[href]');
+    if (!a) return null;
+    return a.getAttribute('href').split('?')[0].split('#')[0];
+  }
+
+  function domFallbackPrice(card) {
+    var money = card.querySelector('.sqs-money-native');
+    var text = money ? money.textContent : card.textContent;
+    var match = text && text.match(/[\d,]+\.?\d*/);
+    return match ? parseFloat(match[0].replace(/,/g, '')) : null;
+  }
+
+  function jsonPrice(item, card) {
+    var variants = item.structuredContent && item.structuredContent.variants;
+    if (variants && variants[0]) {
+      var v = variants[0];
+      if (v.priceMoney && v.priceMoney.value != null) return parseFloat(v.priceMoney.value);
+      if (typeof v.price === 'number') return v.price / 100;
+      if (typeof v.price === 'string') return parseFloat(v.price);
+    }
+    return domFallbackPrice(card);
+  }
+
+  function itemDate(item) {
+    return item.publishOn || item.addedOn || item.updatedOn || 0;
+  }
+
+  function fetchJSON(url) {
+    return fetch(url, { credentials: 'same-origin' })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .catch(function () { return null; });
+  }
+
+  function buildBar(onChange) {
+    var bar = document.createElement('div');
+    bar.id = 'shop-sort-bar';
+
+    var label = document.createElement('label');
+    label.setAttribute('for', 'shop-sort-select');
+    label.textContent = 'Sort by';
+    bar.appendChild(label);
+
+    var select = document.createElement('select');
+    select.id = 'shop-sort-select';
+    [
+      ['featured', 'Featured'],
+      ['name-asc', 'Name: A to Z'],
+      ['name-desc', 'Name: Z to A'],
+      ['price-asc', 'Price: Low to High'],
+      ['price-desc', 'Price: High to Low'],
+      ['date-desc', 'Newest'],
+      ['date-asc', 'Oldest']
+    ].forEach(function (pair) {
+      var opt = document.createElement('option');
+      opt.value = pair[0];
+      opt.textContent = pair[1];
+      select.appendChild(opt);
+    });
+
+    var saved = null;
+    try { saved = localStorage.getItem('shop-sort-pref'); } catch (e) {}
+    if (saved) select.value = saved;
+
+    select.addEventListener('change', function () {
+      try { localStorage.setItem('shop-sort-pref', select.value); } catch (e) {}
+      onChange(select.value);
+    });
+
+    bar.appendChild(select);
+    return { bar: bar, select: select };
+  }
+
+  function init() {
+    if (document.body.classList.contains('sqs-edit-mode-active')) return;
+    if (window.location.pathname.replace(/\/$/, '') !== SHOP_PATH) return;
+
+    var found = findCards();
+    if (!found) return;
+
+    fetchJSON(SHOP_PATH + '?format=json').then(function (data) {
+      if (!data || !data.items) return;
+
+      var byHref = {};
+      data.items.forEach(function (item) { byHref[item.fullUrl] = item; });
+
+      var originalOrder = found.cards.slice();
+      var entries = found.cards.map(function (card) {
+        var item = byHref[cardHref(card)];
+        return {
+          card: card,
+          title: item ? item.title : (card.textContent || ''),
+          price: item ? jsonPrice(item, card) : domFallbackPrice(card),
+          date: item ? itemDate(item) : 0
+        };
+      });
+
+      function applySort(mode) {
+        var ordered;
+        if (mode === 'featured') {
+          ordered = originalOrder;
+        } else {
+          var sorted = entries.slice();
+          sorted.sort(function (a, b) {
+            switch (mode) {
+              case 'name-asc': return a.title.localeCompare(b.title);
+              case 'name-desc': return b.title.localeCompare(a.title);
+              case 'price-asc': return (a.price || 0) - (b.price || 0);
+              case 'price-desc': return (b.price || 0) - (a.price || 0);
+              case 'date-desc': return new Date(b.date) - new Date(a.date);
+              case 'date-asc': return new Date(a.date) - new Date(b.date);
+              default: return 0;
+            }
+          });
+          ordered = sorted.map(function (e) { return e.card; });
+        }
+
+        var frag = document.createDocumentFragment();
+        ordered.forEach(function (card) { frag.appendChild(card); });
+        found.container.appendChild(frag);
+      }
+
+      var ui = buildBar(applySort);
+      found.container.parentElement.insertBefore(ui.bar, found.container);
+      applySort(ui.select.value);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
