@@ -5,22 +5,33 @@
      you set in the editor), Name A-Z / Z-A, Price Low-High / High-Low, and
      Newest / Oldest.
 
+     SHOP_PATH is set to "/shopp" (confirmed from your product links, which
+     are at /shopp/p/<slug> -- note the double "p" in "shopp") rather than
+     the more obvious-looking "/shop". If your Shop page's actual address
+     bar URL is different from that, change SHOP_PATH to match.
+
      Title, price, and date all come from the page's own ?format=json feed
      (same technique as related-content.html) rather than scraping visible
      text, so sorting works regardless of what each product card's markup
-     looks like. The one thing that DOES depend on your template's markup
-     is grouping the cards themselves for reordering -- CARD_SELECTORS
-     below tries the common Squarespace 7.1 grid pattern first, then a
-     couple of fallbacks. If the sort bar doesn't show up at all, open
-     DevTools on your Shop page, confirm the real wrapper class around your
-     product cards, and add it to CARD_SELECTORS.
+     looks like. Cards are matched to their JSON entry by data-product-id
+     (confirmed present on your cards, e.g. data-product-id="6a5e336f...")
+     which is more reliable than matching by link URL; falls back to the
+     link URL if an id ever doesn't match.
 
-     Price comes from the JSON product variant data first; if your site's
-     JSON doesn't expose price the way this expects, it falls back to
-     reading the visible price text off each card (looking for
-     ".sqs-money-native" first, then any "$" amount in the card's text) --
-     flagging this the same way related-content.html flags the image field,
-     since Squarespace's commerce JSON shape has varied by version. -->
+     Confirmed from your DevTools markup: cards are
+     ".product-list > .product-list-item" (lowercase -- a different, newer
+     Squarespace commerce block than the classic ".ProductList-grid"
+     naming), so that's now CARD_SELECTORS' first try, with the older
+     patterns kept as fallbacks in case any other list page on the site
+     uses a different template.
+
+     Price still comes from the JSON product variant data first (checking
+     a sale price before the regular one, since your cards can carry an
+     "on-sale" class), and falls back to reading the visible price text off
+     the card if the JSON shape doesn't match what's expected -- flagged
+     the same way related-content.html flags its image field, since this
+     hasn't been confirmed against your real price JSON yet. The DOM
+     fallback matches £, $, or € amounts, since your shop uses GBP. -->
 
 <style>
 #shop-sort-bar {
@@ -49,10 +60,11 @@
 
 <script>
 (function () {
-  var SHOP_PATH = '/shop'; // edit if your Shop list page lives at a different path
+  var SHOP_PATH = '/shopp'; // confirmed from your product link URLs -- edit if yours differs
 
   var CARD_SELECTORS = [
-    '.ProductList-grid > *',   // Squarespace 7.1 product grid
+    '.product-list > .product-list-item', // confirmed from your DevTools markup
+    '.ProductList-grid > *',   // classic Squarespace 7.1 product grid
     '.ProductList > .grid-item',
     '.grid-container > .grid-item' // 7.0-style summary/product grid
   ];
@@ -67,6 +79,10 @@
     return null;
   }
 
+  function cardId(card) {
+    return card.getAttribute('data-product-id');
+  }
+
   function cardHref(card) {
     var a = card.querySelector('a[href]');
     if (!a) return null;
@@ -76,14 +92,19 @@
   function domFallbackPrice(card) {
     var money = card.querySelector('.sqs-money-native');
     var text = money ? money.textContent : card.textContent;
-    var match = text && text.match(/[\d,]+\.?\d*/);
-    return match ? parseFloat(match[0].replace(/,/g, '')) : null;
+    var match = text && text.match(/[£$€]?\s?[\d,]+\.?\d*/);
+    return match ? parseFloat(match[0].replace(/[£$€,\s]/g, '')) : null;
   }
 
   function jsonPrice(item, card) {
+    var onSale = item.onSale || (card.classList.contains('on-sale'));
     var variants = item.structuredContent && item.structuredContent.variants;
     if (variants && variants[0]) {
       var v = variants[0];
+      if (onSale) {
+        if (v.salePriceMoney && v.salePriceMoney.value != null) return parseFloat(v.salePriceMoney.value);
+        if (typeof v.salePrice === 'number') return v.salePrice / 100;
+      }
       if (v.priceMoney && v.priceMoney.value != null) return parseFloat(v.priceMoney.value);
       if (typeof v.price === 'number') return v.price / 100;
       if (typeof v.price === 'string') return parseFloat(v.price);
@@ -150,12 +171,16 @@
     fetchJSON(SHOP_PATH + '?format=json').then(function (data) {
       if (!data || !data.items) return;
 
+      var byId = {};
       var byHref = {};
-      data.items.forEach(function (item) { byHref[item.fullUrl] = item; });
+      data.items.forEach(function (item) {
+        if (item.id) byId[item.id] = item;
+        byHref[item.fullUrl] = item;
+      });
 
       var originalOrder = found.cards.slice();
       var entries = found.cards.map(function (card) {
-        var item = byHref[cardHref(card)];
+        var item = byId[cardId(card)] || byHref[cardHref(card)];
         return {
           card: card,
           title: item ? item.title : (card.textContent || ''),
